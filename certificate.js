@@ -14,6 +14,14 @@
     { code: 'pensamiento_critico', name: 'Pensamiento crítico', result: 'desarrolla-pensamiento-v1', keys: ['desarrolla-crit-learn-v1', 'desarrolla-crit-role-v1', 'desarrolla-crit-plan-v1'], badge: 'pensamiento-critico.svg' },
     { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1'], badge: 'gestion-emocional.svg' }
   ];
+  const PROGRAMS = {
+    negociacion: ['Conflicto, posiciones, intereses y necesidades', 'Preparación: actores, evidencia, límites y alternativas', 'Escucha activa y comunicación proporcional del riesgo', 'Negociación colaborativa y criterios objetivos', 'Conversaciones con trabajadores, sindicatos, dirección, autoridad y comunidad', 'Acuerdos verificables, responsables, plazos y seguimiento'],
+    comunicacion_asertiva: ['Estilos de comunicación y respuesta profesional', 'Claridad, firmeza y respeto en mensajes preventivos', 'Escucha activa, preguntas y reformulación', 'Comunicación de riesgos, controles e incertidumbre', 'Retroalimentación y conversaciones difíciles', 'Adaptación del mensaje a públicos y niveles jerárquicos'],
+    liderazgo_preventivo: ['Fundamentos del liderazgo preventivo', 'Propósito, ejemplo y coherencia profesional', 'Participación, confianza y seguridad psicológica', 'Movilización de equipos para controlar riesgos', 'Decisiones, responsabilidades y seguimiento', 'Desarrollo de cultura preventiva sostenible'],
+    influencia_estrategica: ['Mapeo de actores, poder, interés e impacto', 'Construcción del caso preventivo', 'SST, continuidad operacional y sostenibilidad', 'Argumentación y adaptación del mensaje', 'Coaliciones, patrocinio y gobernanza', 'Seguimiento de compromisos estratégicos'],
+    pensamiento_critico: ['Calidad de fuentes, evidencia y trazabilidad', 'Hechos, interpretaciones, supuestos y opiniones', 'Sesgos cognitivos aplicados a decisiones de SST', 'Causalidad, incertidumbre y explicaciones alternativas', 'Preguntas críticas y contraste de información', 'Decisiones proporcionales basadas en evidencia'],
+    gestion_emocional: ['Autoconocimiento y reconocimiento de detonantes', 'Regulación emocional bajo presión', 'Empatía sin renunciar al criterio preventivo', 'Manejo de tensión, desacuerdo y confrontación', 'Pausas, recuperación y respuesta consciente', 'Plan personal para conversaciones exigentes']
+  };
   const serverEligible = new Map();
   let eligibilityLoading = false;
   let eligibilityLoadedFor = '';
@@ -91,29 +99,115 @@
     modal.innerHTML = `
       <div class="certificate-dialog">
         <div class="certificate-toolbar">
-          <div><b>Tu certificado está listo</b><span>Descárgalo como PDF desde la opción de impresión.</span></div>
+          <div><b>Tu certificado está listo</b><span>Incluye certificado y contenido programático.</span></div>
           <button type="button" data-certificate-close aria-label="Cerrar">×</button>
         </div>
         <div class="certificate-preview">${certificateMarkup(data, route)}</div>
         <div class="certificate-actions">
           <button class="secondary" type="button" data-certificate-close>Cerrar</button>
-          <button class="primary" type="button" id="printCertificate">Descargar / imprimir PDF</button>
+          <button class="primary" type="button" id="printCertificate">Descargar PDF</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
     modal.querySelectorAll('[data-certificate-close]').forEach(button => button.onclick = () => modal.remove());
-    modal.querySelector('#printCertificate').onclick = () => printCertificate(data, route);
+    modal.querySelector('#printCertificate').onclick = event => downloadPdf(data, route, event.currentTarget);
   }
 
-  function printCertificate(data, route) {
-    const popup = window.open('', '_blank');
-    if (!popup) {
-      notice('Permite ventanas emergentes para descargar el certificado.');
-      return;
-    }
-    popup.document.write(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Certificado - ${esc(data.nombre)}</title><style>${certificateCss()}@page{size:A4 landscape;margin:0}html,body{margin:0;background:#fff}.certificate-sheet{width:297mm;height:210mm;margin:0;box-shadow:none}.certificate-frame{height:100%;box-sizing:border-box}</style></head><body>${certificateMarkup(data, route)}<script>Promise.all(Array.from(document.images).map(i=>i.complete?Promise.resolve():new Promise(r=>{i.onload=i.onerror=r}))).then(()=>setTimeout(()=>window.print(),250));<\/script></body></html>`);
-    popup.document.close();
-    try { popup.opener = null; } catch (_) {}
+  function loadJsPdf() {
+    if (window.jspdf?.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
+      script.onload = () => resolve(window.jspdf.jsPDF);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function raster(url) {
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) return null;
+    const objectUrl = window.URL.createObjectURL(await response.blob());
+    try {
+      const image = new Image(); image.src = objectUrl; await image.decode();
+      const canvas = document.createElement('canvas'); canvas.width = 500; canvas.height = 500;
+      const context = canvas.getContext('2d'), ratio = Math.min(500 / image.naturalWidth, 500 / image.naturalHeight);
+      const width = image.naturalWidth * ratio, height = image.naturalHeight * ratio;
+      context.drawImage(image, (500 - width) / 2, (500 - height) / 2, width, height);
+      return canvas.toDataURL('image/png');
+    } finally { window.URL.revokeObjectURL(objectUrl); }
+  }
+
+  function pageFrame(doc, logo, badge, heading, subheading) {
+    doc.setFillColor(248, 250, 252); doc.rect(0, 0, 297, 210, 'F');
+    doc.setFillColor(0, 32, 91); doc.rect(0, 0, 297, 8, 'F'); doc.rect(0, 202, 297, 8, 'F');
+    doc.setFillColor(0, 123, 133); doc.rect(8, 8, 4, 194, 'F');
+    doc.setDrawColor(0, 123, 133); doc.setLineWidth(.8); doc.roundedRect(17, 16, 263, 177, 3, 3, 'S');
+    if (logo) doc.addImage(logo, 'PNG', 23, 20, 31, 31);
+    if (badge) doc.addImage(badge, 'PNG', 245, 18, 27, 34);
+    doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.text(heading, 148.5, 28, { align: 'center' });
+    doc.setTextColor(0, 123, 133); doc.setFontSize(8); doc.text(subheading, 148.5, 35, { align: 'center', maxWidth: 170 });
+  }
+
+  function watermark(doc) {
+    doc.setTextColor(210, 45, 45); doc.setGState(new doc.GState({ opacity: .08 }));
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(42); doc.text('MODO DE PRUEBA', 148.5, 113, { align: 'center', angle: 18 });
+    doc.setGState(new doc.GState({ opacity: 1 }));
+  }
+
+  async function downloadPdf(data, route, button) {
+    const original = button.textContent; button.disabled = true; button.textContent = 'Generando PDF…';
+    try {
+      const JsPDF = await loadJsPdf();
+      const [logo, badge] = await Promise.all([
+        raster('https://raw.githubusercontent.com/movidasst/geo/main/logo-oficial-movida-sst-plus.png'),
+        raster(`https://raw.githubusercontent.com/movidasst/geo/main/assets/badges/${route.badge}`)
+      ]);
+      const doc = new JsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
+      pageFrame(doc, logo, badge, 'LA ACADEMIA MOVIDA DE SST', 'DE LA REACCIÓN A LA PREVENCIÓN');
+      doc.setTextColor(0, 123, 133); doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.text('CERTIFICADO DE CULMINACIÓN', 148.5, 52, { align: 'center' });
+      doc.setTextColor(71, 85, 105); doc.setFont('times', 'normal'); doc.setFontSize(16); doc.text('Deja constancia de que', 148.5, 64, { align: 'center' });
+      doc.setTextColor(0, 32, 91); doc.setFont('times', 'bold'); doc.setFontSize(30); doc.text(data.nombre, 148.5, 80, { align: 'center', maxWidth: 205 });
+      doc.setDrawColor(255, 182, 0); doc.setLineWidth(1); doc.line(76, 86, 221, 86);
+      doc.setTextColor(100, 116, 139); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+      if (data.documento) doc.text(`Documento: ${data.documento}`, 148.5, 93, { align: 'center' });
+      doc.setTextColor(71, 85, 105); doc.setFontSize(11); doc.text('completó satisfactoriamente la ruta de desarrollo de la competencia', 148.5, 104, { align: 'center' });
+      doc.setTextColor(0, 123, 133); doc.setFont('helvetica', 'bold'); doc.setFontSize(20);
+      const competence = doc.splitTextToSize(data.competencia, 205); doc.text(competence, 148.5, 116, { align: 'center' });
+      const end = 116 + (competence.length - 1) * 8;
+      doc.setFillColor(237, 248, 248); doc.roundedRect(91, end + 7, 115, 12, 6, 6, 'F');
+      doc.setTextColor(0, 32, 91); doc.setFontSize(10); doc.text('EVALÚA  ·  APRENDE  ·  PRACTICA  ·  MEJORA', 148.5, end + 15, { align: 'center' });
+      doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(`Otorgado el ${formattedDate(data.completada_at)}`, 148.5, end + 29, { align: 'center' });
+      doc.setTextColor(100, 116, 139); doc.setFontSize(7); doc.text('CÓDIGO DEL CERTIFICADO', 27, 172); doc.text('OTORGA', 148.5, 172, { align: 'center' });
+      doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text(data.codigo, 27, 178); doc.text('La Academia Movida de SST', 148.5, 178, { align: 'center' });
+      doc.setFont('times', 'italic'); doc.setFontSize(16); doc.text('David Linares Brea', 244, 166, { align: 'center' }); doc.setDrawColor(0, 32, 91); doc.line(214, 170, 274, 170);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text('David Linares Brea', 244, 176, { align: 'center' }); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.text('FIRMA AUTORIZADA', 244, 181, { align: 'center' });
+      if (data.prueba) watermark(doc);
+
+      doc.addPage('a4', 'landscape');
+      pageFrame(doc, logo, badge, 'CONTENIDO PROGRAMÁTICO', data.competencia.toUpperCase());
+      doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+      doc.text('Ruta aplicada de desarrollo de competencias para profesionales de Seguridad y Salud en el Trabajo.', 25, 52);
+      (PROGRAMS[route.code] || []).forEach((topic, index) => {
+        const col = index % 2, row = Math.floor(index / 2), x = 25 + col * 126, y = 61 + row * 28;
+        doc.setFillColor(241, 247, 248); doc.roundedRect(x, y, 118, 21, 3, 3, 'F');
+        doc.setFillColor(index % 2 ? 112 : 0, index % 2 ? 173 : 123, index % 2 ? 71 : 133); doc.circle(x + 10, y + 10.5, 5, 'F');
+        doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.text(String(index + 1), x + 10, y + 13, { align: 'center' });
+        doc.setTextColor(0, 32, 91); doc.setFontSize(9.5); doc.text(doc.splitTextToSize(topic, 91), x + 20, y + 9);
+      });
+      doc.setFillColor(0, 32, 91); doc.roundedRect(25, 150, 244, 18, 3, 3, 'F');
+      doc.setTextColor(255, 207, 51); doc.setFontSize(9); doc.text('METODOLOGÍA', 34, 157);
+      doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'normal'); doc.text('Autodiagnóstico orientativo · Guía interactiva · Role play aplicado · Plan personal de mejora', 34, 163);
+      doc.setFillColor(255, 247, 225); doc.roundedRect(25, 174, 244, 12, 3, 3, 'F');
+      doc.setTextColor(100, 85, 45); doc.setFontSize(7.5); doc.text('Este documento deja constancia de la culminación de una ruta de desarrollo. No constituye licencia profesional, acreditación académica formal ni autorización para ejercer.', 148.5, 181, { align: 'center', maxWidth: 230 });
+      doc.setTextColor(100, 116, 139); doc.setFontSize(7); doc.text(data.codigo, 25, 195); doc.text('La Academia Movida de SST · www.movidasst.com', 272, 195, { align: 'right' });
+      if (data.prueba) watermark(doc);
+      doc.setProperties({ title: `Certificado - ${data.nombre}`, author: 'La Academia Movida de SST', creator: 'Desarrolla SST' });
+      doc.save(`Certificado-${route.code}-${data.nombre.replace(/[^a-z0-9]+/gi, '-')}.pdf`);
+      notice('Certificado de dos páginas descargado.');
+    } catch (error) {
+      console.error(error); notice('No fue posible generar el PDF. Intenta nuevamente.');
+    } finally { button.disabled = false; button.textContent = original; }
   }
 
   function certificateCss() {
