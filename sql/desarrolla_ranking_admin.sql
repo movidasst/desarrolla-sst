@@ -1,0 +1,6 @@
+-- Integración de Desarrolla SST con el ranking y la administración común.
+-- Aplicada al proyecto Directorio-movidasst-plus el 20-09-2026.
+-- Crea desarrolla_resultados, desarrolla_puntos_otorgados y las funciones
+-- desarrolla_completar_diagnostico y desarrolla_admin_panel.
+-- La acreditación se protege con UNIQUE(integrante_id, diagnostico) y una
+-- relación única con puntos_eventos: repetir actualiza resultados, no duplica XP.
