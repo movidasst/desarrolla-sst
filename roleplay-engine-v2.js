@@ -49,7 +49,7 @@ function start(){syncModeClass();return{trust:50,control:50,evidence:50,traceabi
 function apply(state,points,meta){const s={...(state||start())},p=Number(points),prev=s.last;s.path=Array.isArray(s.path)?[...s.path]:[];s.last=p;s.turns=(s.turns||0)+1;s.totalPoints=(s.totalPoints||0)+p;s.maxPoints=(s.maxPoints||0)+2;
  if(p>=2){s.trust=clamp((s.trust??50)+12);s.control=clamp((s.control??50)+16);s.evidence=clamp((s.evidence??50)+10);s.traceability=clamp((s.traceability??50)+10)}
  else if(p>=0){s.trust=clamp((s.trust??50)+1);s.control=clamp((s.control??50)+2);s.evidence=clamp((s.evidence??50)+1);s.traceability=clamp((s.traceability??50)+1)}
- else{s.trust=clamp((s.trust??50)-18);s.control=clamp((s.control??50)-22);s.evidence=clamp((s.evidence??50)-10);s.traceability=clamp((s.traceability??50)-8);s.hadRisk=true}
+ else{s.trust=clamp((s.trust??50)-18);s.control=clamp((s.control??50)-22);s.evidence=clamp((s.evidence??50)-10);s.traceability=clamp((s.traceability??50)-8);s.hadRisk=true;s.recovered=false}
  if(prev<0&&p>=2)s.recovered=true;
  if(meta)s.path.push({points:p,choice:meta.choice||"",feedback:meta.feedback||"",challenge:!!meta.challenge,domain:meta.domain||""});
  return s}
