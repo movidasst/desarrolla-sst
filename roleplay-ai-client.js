@@ -10,10 +10,9 @@ function attach(cfg){
  const root=document.getElementById(cfg.root),guided=document.getElementById(cfg.guidedButton);if(!root||!guided||root.querySelector(".ai-pilot-callout"))return;
  guided.classList.remove("primary");guided.classList.add("secondary");guided.textContent=cfg.guidedLabel||"Opciones guiadas";
  const box=document.createElement("div");box.className="ai-pilot-callout";box.innerHTML='<b>Simulación con IA</b><span>Responde con tus propias palabras. La contraparte reaccionará a lo que escribas y una rúbrica específica de esta competencia evaluará tu trayectoria.</span>';
- const buttons=guided.parentElement?.classList.contains("route-buttons")?guided.parentElement:null;
- if(buttons)buttons.parentNode.insertBefore(box,buttons);else guided.parentNode.insertBefore(box,guided);
- const ai=document.createElement("button");ai.type="button";ai.className="primary";ai.textContent="Responder libremente con IA →";
- if(buttons)buttons.appendChild(ai);else guided.insertAdjacentElement("afterend",ai);
+ let buttons=guided.parentElement?.classList.contains("route-buttons")?guided.parentElement:null;
+ if(buttons)buttons.parentNode.insertBefore(box,buttons);else{const parent=guided.parentNode;parent.insertBefore(box,guided);buttons=document.createElement("div");buttons.className="route-buttons";parent.insertBefore(buttons,guided);buttons.appendChild(guided)}
+ const ai=document.createElement("button");ai.type="button";ai.className="primary";ai.textContent="Responder libremente con IA →";buttons.appendChild(ai);
  ai.onclick=()=>start(cfg);
 }
 function start(cfg){cfg.reset?.();cfg.onStart?.();const state={turn:1,prompt:cfg.actor.opening,busy:false};render(cfg,state,null)}
