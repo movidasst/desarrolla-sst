@@ -67,6 +67,7 @@
 
   function certificateMarkup(data, route) {
     const documentLine = data.documento ? `Documento: ${esc(data.documento)}` : '';
+    const verificationUrl = `https://desarrolla.movidasst.com/verificar.html?codigo=${encodeURIComponent(data.codigo)}`;
     return `
       <article class="certificate-sheet">
         <div class="certificate-frame">
@@ -88,7 +89,7 @@
             <p class="certificate-date">Otorgado el ${formattedDate(data.completada_at)}</p>
           </main>
           <footer class="certificate-footer">
-            <div class="certificate-code"><span>Código del certificado</span><b>${esc(data.codigo)}</b></div>
+            <div class="certificate-code"><span>Código del certificado</span><a href="${verificationUrl}" target="_blank" rel="noopener noreferrer" title="Verificar certificado ${esc(data.codigo)}"><b>${esc(data.codigo)}</b></a><small>Haz clic en el código para verificarlo</small></div>
             <div class="certificate-grant"><span>Otorga</span><b>La Academia Movida de SST</b></div>
             <div class="certificate-signature"><em>David Linares Brea</em><i></i><b>David Linares Brea</b><span>Firma autorizada</span></div>
           </footer>
@@ -186,8 +187,9 @@
       doc.setTextColor(0, 32, 91); doc.setFontSize(9); doc.text('EVALÚA  ·  APRENDE  ·  PRACTICA  ·  MEJORA  ·  DEMUESTRA', 148.5, end + 15, { align: 'center' });
       doc.setTextColor(71, 85, 105); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(`Otorgado el ${formattedDate(data.completada_at)}`, 148.5, end + 29, { align: 'center' });
       doc.setTextColor(100, 116, 139); doc.setFontSize(7); doc.text('CÓDIGO DEL CERTIFICADO', 27, 172); doc.text('OTORGA', 148.5, 172, { align: 'center' });
-      doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text(data.codigo, 27, 178); doc.text('La Academia Movida de SST', 148.5, 178, { align: 'center' });
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(0, 123, 133); doc.textWithLink('Verificar autenticidad en desarrolla.movidasst.com', 27, 183, { url: `https://desarrolla.movidasst.com/verificar.html?codigo=${encodeURIComponent(data.codigo)}` });
+      const verificationUrl = `https://desarrolla.movidasst.com/verificar.html?codigo=${encodeURIComponent(data.codigo)}`;
+      doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.textWithLink(data.codigo, 27, 178, { url: verificationUrl }); doc.text('La Academia Movida de SST', 148.5, 178, { align: 'center' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(0, 123, 133); doc.textWithLink('Verificar autenticidad en desarrolla.movidasst.com', 27, 183, { url: verificationUrl });
       doc.setFont('times', 'italic'); doc.setFontSize(16); doc.text('David Linares Brea', 244, 166, { align: 'center' }); doc.setDrawColor(0, 32, 91); doc.line(214, 170, 274, 170);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text('David Linares Brea', 244, 176, { align: 'center' }); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.text('FIRMA AUTORIZADA', 244, 181, { align: 'center' });
       if (data.prueba) watermark(doc);
@@ -216,8 +218,8 @@
       doc.setFillColor(255, 247, 225); doc.roundedRect(25, 162, 244, 17, 3, 3, 'F');
       doc.setTextColor(100, 85, 45); doc.setFontSize(7.2); doc.text('Este documento deja constancia de la culminación de una ruta de desarrollo. No constituye licencia profesional,', 148.5, 169, { align: 'center' });
       doc.text('acreditación académica formal ni autorización para ejercer.', 148.5, 174, { align: 'center' });
-      doc.setTextColor(100, 116, 139); doc.setFontSize(7); doc.text(data.codigo, 25, 187); doc.text('La Academia Movida de SST · www.movidasst.com', 272, 187, { align: 'right' });
-      doc.setTextColor(0, 123, 133); doc.setFontSize(6.5); doc.textWithLink('Verificar certificado', 25, 192, { url: `https://desarrolla.movidasst.com/verificar.html?codigo=${encodeURIComponent(data.codigo)}` });
+      doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.textWithLink(data.codigo, 25, 187, { url: verificationUrl }); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139); doc.text('La Academia Movida de SST · www.movidasst.com', 272, 187, { align: 'right' });
+      doc.setTextColor(0, 123, 133); doc.setFontSize(6.5); doc.textWithLink('Verificar certificado', 25, 192, { url: verificationUrl });
       if (data.prueba) watermark(doc);
       doc.setProperties({ title: `Certificado - ${data.nombre}`, author: 'La Academia Movida de SST', creator: 'Desarrolla SST' });
       doc.save(`Certificado-${route.code}-${data.nombre.replace(/[^a-z0-9]+/gi, '-')}.pdf`);
@@ -235,7 +237,7 @@
       .certificate-topline,.certificate-bottomline{position:absolute;left:4%;right:4%;height:6px;background:linear-gradient(90deg,#00205b,#007b85,#70ad47,#ffb600)}.certificate-topline{top:3.2%}.certificate-bottomline{bottom:3.2%}
       .certificate-header{display:grid;grid-template-columns:110px 1fr 95px;align-items:center;gap:24px}.certificate-logo{width:105px;height:105px;object-fit:contain}.certificate-badge{width:90px;height:105px;object-fit:contain;justify-self:end}.certificate-header div{text-align:center}.certificate-header p{margin:0;font-size:22px;font-weight:900;letter-spacing:.14em}.certificate-header span{font-size:13px;color:#007b85;font-weight:800;letter-spacing:.1em}
       .certificate-main{text-align:center;padding:5px 7% 0}.certificate-overline{margin:0;color:#007b85;font-size:14px;font-weight:900;letter-spacing:.2em}.certificate-main h1{margin:11px 0 3px;font:600 25px Georgia,serif;color:#475569}.certificate-main h2{display:inline-block;margin:4px 0 3px;padding:0 35px 8px;border-bottom:2px solid #ffb600;font:700 42px Georgia,serif;color:#00205b}.certificate-document{margin:5px 0 11px;color:#64748b;font-size:13px}.certificate-copy{margin:5px 0;color:#475569;font-size:17px}.certificate-main h3{margin:9px auto;color:#007b85;font-size:29px;line-height:1.15;max-width:850px}.certificate-route{display:inline-block;margin:6px 0;padding:7px 18px;border-radius:999px;background:#eef8f7;color:#00205b;font-weight:800;letter-spacing:.08em}.certificate-date{margin:12px 0 0;font-size:15px;color:#475569}
-      .certificate-footer{position:absolute;left:6%;right:6%;bottom:7%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:25px;text-align:center}.certificate-footer span{display:block;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.1em}.certificate-footer b{display:block;margin-top:5px;font-size:14px}.certificate-code{text-align:left}.certificate-grant{text-align:center}.certificate-signature{text-align:center}.certificate-signature em{display:block;font:italic 27px 'Brush Script MT','Segoe Script',cursive;color:#00205b}.certificate-signature i{display:block;height:1px;background:#00205b;margin:0 auto 5px;max-width:230px}.certificate-signature b{margin:0}
+      .certificate-footer{position:absolute;left:6%;right:6%;bottom:7%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:end;gap:25px;text-align:center}.certificate-footer span{display:block;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.1em}.certificate-footer b{display:block;margin-top:5px;font-size:14px}.certificate-code{text-align:left}.certificate-code a{display:inline-block;margin-top:5px;color:#00205b;text-decoration:underline;text-decoration-color:#007b85;text-underline-offset:3px}.certificate-code a b{margin:0}.certificate-code small{display:block;margin-top:4px;color:#007b85;font-size:9px;font-weight:700}.certificate-grant{text-align:center}.certificate-signature{text-align:center}.certificate-signature em{display:block;font:italic 27px 'Brush Script MT','Segoe Script',cursive;color:#00205b}.certificate-signature i{display:block;height:1px;background:#00205b;margin:0 auto 5px;max-width:230px}.certificate-signature b{margin:0}
     `;
   }
 
