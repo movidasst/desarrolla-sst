@@ -3,6 +3,7 @@
 @media(max-width:620px){.hero h1{font-size:2.65rem}.featured{grid-template-columns:auto 1fr}.featured>.primary{grid-column:1/-1}.grid{grid-template-columns:1fr}.principle{grid-template-columns:1fr}.facts{display:grid;grid-template-columns:repeat(3,1fr)}.site-footer{display:grid;gap:7px}}
 
 [hidden]{display:none!important}
+.site-footer::after{content:"Elaborado por David Linares Brea · WhatsApp +56 9 6861 5650";color:var(--navy);font-weight:700}
 
 /* Logo oficial vigente de la página principal */
 .gate-visual>img,.mobile-logo,.brand img{
