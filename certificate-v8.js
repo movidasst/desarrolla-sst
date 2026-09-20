@@ -22,6 +22,13 @@
     pensamiento_critico: ['Calidad de fuentes, evidencia y trazabilidad', 'Hechos, interpretaciones, supuestos y opiniones', 'Sesgos cognitivos aplicados a decisiones de SST', 'Causalidad, incertidumbre y explicaciones alternativas', 'Preguntas críticas y contraste de información', 'Decisiones proporcionales basadas en evidencia'],
     gestion_emocional: ['Autoconocimiento y reconocimiento de detonantes', 'Regulación emocional bajo presión', 'Empatía sin renunciar al criterio preventivo', 'Manejo de tensión, desacuerdo y confrontación', 'Pausas, recuperación y respuesta consciente', 'Plan personal para conversaciones exigentes']
   };
+  const PAYMENT_INFO = {
+    transfer: 'Banco de Venezuela · Cuenta corriente 0102-0236-1500-0033-6732 · Ezequiel Linares · C.I. 30.407.087',
+    pagoMovil: 'Banco de Venezuela · Ezequiel Linares · C.I. V-30.407.087 · Teléfono 0412-6372223',
+    binance: 'USDT · Red BEP20 (BSC) · ID 176067584 · david.linaresb@gmail.com',
+    paypal: 'movidasst@gmail.com · Enviar como Amigo/Familiar · https://paypal.me/movidasst'
+  };
+  const WHATSAPP_PAYMENT = '56968615650';
   const serverEligible = new Map();
   let eligibilityLoading = false;
   let eligibilityLoadedFor = '';
@@ -303,6 +310,83 @@
     }
   }
 
+  async function copyPayment(value, button) {
+    try {
+      await navigator.clipboard.writeText(value);
+      const original = button.textContent;
+      button.textContent = 'Copiado';
+      setTimeout(() => { button.textContent = original; }, 1600);
+    } catch {
+      notice('Mantén pulsado sobre los datos para copiarlos.');
+    }
+  }
+
+  async function reportPayment(route, button) {
+    const token = sessionStorage.getItem(TOKEN);
+    if (!token) { notice('Tu sesión venció. Ingresa nuevamente.'); return; }
+    const popup = window.open('', '_blank');
+    button.disabled = true;
+    button.textContent = 'Preparando reporte…';
+    try {
+      const response = await fetch(`${URL}/rest/v1/rpc/desarrolla_reportar_pago`, {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: token, p_diagnostico: route.code })
+      });
+      const data = await response.json();
+      if (!response.ok || !data?.ok) throw new Error(data?.message || 'No fue posible registrar el reporte.');
+      const message = [
+        'Hola David, reporto el pago de USD 5 para la emisión de mi certificado.',
+        `Competencia: ${data.competencia}`,
+        `Participante: ${data.nombre}`,
+        `Documento: ${data.documento || 'No indicado'}`,
+        'Adjunto el comprobante de pago para su validación.'
+      ].join('\n');
+      const whatsapp = `https://wa.me/${WHATSAPP_PAYMENT}?text=${encodeURIComponent(message)}`;
+      if (popup) popup.location.href = whatsapp;
+      else window.location.href = whatsapp;
+      document.getElementById('paymentModal')?.remove();
+      const state = serverEligible.get(route.code);
+      if (state) state.pago_estado = data.estado;
+      mountButtons();
+      notice('Pago reportado. El certificado se habilitará al ser validado.');
+    } catch (error) {
+      if (popup) popup.close();
+      notice(error.message);
+      button.disabled = false;
+      button.textContent = 'Reportar pago por WhatsApp';
+    }
+  }
+
+  function openPaymentModal(route, serverRoute) {
+    document.getElementById('paymentModal')?.remove();
+    const pending = serverRoute?.pago_estado === 'pendiente';
+    const rejected = serverRoute?.pago_estado === 'rechazado';
+    const modal = document.createElement('div');
+    modal.id = 'paymentModal';
+    modal.className = 'payment-modal';
+    modal.innerHTML = `
+      <section class="payment-dialog" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+        <header><div><span>Emisión del certificado</span><h2 id="paymentTitle">${esc(route.name)}</h2></div><button type="button" data-payment-close aria-label="Cerrar">×</button></header>
+        <div class="payment-price"><small>Valor de emisión</small><strong>USD 5</strong><p>Completa el pago y repórtalo por WhatsApp. El certificado se habilitará después de la validación administrativa.</p></div>
+        ${pending ? '<p class="payment-state pending">Pago reportado · pendiente de validación</p>' : ''}
+        ${rejected ? '<p class="payment-state rejected">El reporte anterior requiere corrección. Revisa los datos y envía nuevamente el comprobante.</p>' : ''}
+        <div class="payment-methods">
+          <article><h3>Transferencia Venezuela</h3><p>${esc(PAYMENT_INFO.transfer)}</p><button type="button" data-copy="transfer">Copiar datos</button></article>
+          <article><h3>Pago Móvil</h3><p>${esc(PAYMENT_INFO.pagoMovil)}</p><button type="button" data-copy="pagoMovil">Copiar datos</button></article>
+          <article><h3>Binance USDT</h3><p>${esc(PAYMENT_INFO.binance)}</p><button type="button" data-copy="binance">Copiar datos</button></article>
+          <article><h3>PayPal</h3><p>${esc(PAYMENT_INFO.paypal)}</p><button type="button" data-copy="paypal">Copiar datos</button></article>
+        </div>
+        <div class="payment-actions"><button type="button" class="secondary" data-payment-close>Cerrar</button><button type="button" class="payment-whatsapp">Reportar pago por WhatsApp</button></div>
+      </section>`;
+    document.body.appendChild(modal);
+    modal.querySelectorAll('[data-payment-close]').forEach(button => button.onclick = () => modal.remove());
+    modal.onclick = event => { if (event.target === modal) modal.remove(); };
+    modal.querySelectorAll('[data-copy]').forEach(button => button.onclick = () => copyPayment(PAYMENT_INFO[button.dataset.copy], button));
+    modal.querySelector('.payment-whatsapp').onclick = event => reportPayment(route, event.currentTarget);
+    modal.querySelector('[data-payment-close]').focus();
+  }
+
   async function loadEligibility() {
     if (eligibilityLoading) return;
     const token = sessionStorage.getItem(TOKEN);
@@ -333,21 +417,31 @@
     cards.forEach((card, index) => {
       const route = ROUTES[index];
       const serverRoute = route ? serverEligible.get(route.code) : null;
-      if (!route || (!complete(route) && !serverRoute)) return;
-      if (serverRoute?.prueba) {
+      card.querySelector('.certificate-button, .payment-button')?.remove();
+      if (!route || !serverRoute) return;
+      if (serverRoute.prueba) {
         card.querySelectorAll('.cp-stages span').forEach(stage => {
           stage.classList.add('done');
           stage.textContent = '✓ ' + stage.textContent.replace(/^[✓○]\s*/, '');
         });
         const detail = card.querySelector('.cp-title small');
-        if (detail) detail.textContent = '4/4 etapas · modo de prueba';
+        if (detail) detail.textContent = '5/5 etapas · modo de prueba';
       }
-      if (card.querySelector('.certificate-button')) return;
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'certificate-button';
-      button.innerHTML = '<span>▣</span> Generar certificado';
-      button.onclick = () => handle(button, route);
+      if (serverRoute.pago_estado === 'validado') {
+        button.className = 'certificate-button';
+        button.innerHTML = '<span>▣</span> Descargar certificado';
+        button.onclick = () => handle(button, route);
+      } else {
+        button.className = 'payment-button';
+        button.innerHTML = serverRoute.pago_estado === 'pendiente'
+          ? '<span>◷</span> Pago reportado · ver estado'
+          : serverRoute.pago_estado === 'rechazado'
+            ? '<span>!</span> Corregir reporte de pago'
+            : '<span>$</span> Reportar pago · USD 5';
+        button.onclick = () => openPaymentModal(route, serverRoute);
+      }
       card.appendChild(button);
     });
     if (serverEligible.size === ROUTES.length && Array.from(serverEligible.values()).every(route => route.prueba)) {
@@ -357,7 +451,7 @@
       const ring = summary?.querySelector('.progress-ring');
       const ringText = ring?.querySelector('span');
       if (title) title.textContent = '100% completado · prueba';
-      if (detail) detail.textContent = '24 de 24 etapas · 6 de 6 rutas habilitadas para prueba';
+      if (detail) detail.textContent = '30 de 30 etapas · certificados sujetos a validación de pago';
       if (ring) ring.style.setProperty('--p', '100');
       if (ringText) ringText.textContent = '100%';
     }
@@ -366,9 +460,10 @@
   const style = document.createElement('style');
   style.textContent = `
     ${certificateCss()}
-    .certificate-button{width:100%;margin-top:16px;border:0;border-radius:12px;padding:12px 16px;background:linear-gradient(135deg,#00205b,#007b85);color:#fff;font:800 14px Outfit,Arial,sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(0,32,91,.18)}.certificate-button:disabled{opacity:.65}
+    .certificate-button,.payment-button{width:100%;margin-top:16px;border:0;border-radius:12px;padding:12px 16px;color:#fff;font:800 14px Outfit,Arial,sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(0,32,91,.18)}.certificate-button{background:linear-gradient(135deg,#00205b,#007b85)}.payment-button{background:linear-gradient(135deg,#007b85,#70ad47)}.certificate-button:disabled,.payment-button:disabled{opacity:.65}
+    .payment-modal{position:fixed;inset:0;z-index:10020;display:grid;place-items:center;padding:14px;background:rgba(0,20,48,.8);overflow:auto}.payment-dialog{width:min(760px,100%);max-height:95dvh;overflow:auto;border-radius:24px;background:#f8fafc;box-shadow:0 28px 80px rgba(0,0,0,.4)}.payment-dialog>header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:14px;align-items:center;padding:18px 20px;background:#fff;border-bottom:1px solid #dce5ea}.payment-dialog>header span{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#007b85}.payment-dialog>header h2{margin:3px 0 0;color:#00205b;font-size:18px}.payment-dialog>header button{width:40px;height:40px;border:0;border-radius:50%;background:#e8eef3;color:#00205b;font-size:25px}.payment-price{margin:18px;padding:18px;border-radius:18px;background:linear-gradient(135deg,#00205b,#007b85);color:#fff}.payment-price small{display:block;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.payment-price strong{display:block;margin:4px 0;font-size:32px}.payment-price p{margin:0;font-size:13px;line-height:1.45}.payment-state{margin:0 18px 14px;padding:11px 13px;border-radius:12px;font-weight:800;font-size:12px}.payment-state.pending{background:#fff7db;color:#765700}.payment-state.rejected{background:#fff1f2;color:#be123c}.payment-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 18px 18px}.payment-methods article{display:flex;flex-direction:column;padding:14px;border:1px solid #dce5ea;border-radius:15px;background:#fff}.payment-methods h3{margin:0 0 6px;color:#00205b;font-size:14px}.payment-methods p{flex:1;margin:0 0 10px;color:#52697a;font-size:11px;line-height:1.45}.payment-methods button{border:1px solid #007b85;border-radius:9px;padding:8px;background:#eef8f7;color:#006a73;font-weight:800}.payment-actions{position:sticky;bottom:0;display:flex;gap:10px;padding:14px 18px;background:#fff;border-top:1px solid #dce5ea}.payment-actions button{min-height:46px;border:0;border-radius:11px;padding:10px 16px;font-weight:900}.payment-actions .secondary{background:#e8eef3;color:#00205b}.payment-whatsapp{flex:1;background:#25d366;color:#073b1b}
     .certificate-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,20,48,.76);display:grid;place-items:center;padding:16px;overflow:auto}.certificate-dialog{width:min(1100px,100%);max-height:96dvh;overflow:auto;background:#f8fafc;border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.35)}.certificate-toolbar,.certificate-actions{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:16px 20px}.certificate-toolbar b,.certificate-toolbar span{display:block}.certificate-toolbar span{color:#64748b;font-size:13px;margin-top:3px}.certificate-toolbar button{width:40px;height:40px;border:0;border-radius:50%;font-size:26px;background:#e8eef3;color:#00205b}.certificate-preview{padding:0 20px 10px;overflow:auto}.certificate-preview .certificate-sheet{width:100%;min-width:820px}.certificate-actions{justify-content:flex-end;border-top:1px solid #dce5ea}.certificate-actions button{padding:12px 18px}
-    @media(max-width:760px){.certificate-preview{padding:0 12px 10px}.certificate-preview .certificate-sheet{min-width:760px}.certificate-toolbar{position:sticky;top:0;z-index:2;background:#f8fafc}.certificate-actions{position:sticky;bottom:0;background:#f8fafc}.certificate-actions button{flex:1}.certificate-toolbar span{display:none}}
+    @media(max-width:760px){.payment-methods{grid-template-columns:1fr}.payment-actions{display:grid;grid-template-columns:1fr 1.6fr}.payment-dialog>header h2{font-size:15px}.certificate-preview{padding:0 12px 10px}.certificate-preview .certificate-sheet{min-width:760px}.certificate-toolbar{position:sticky;top:0;z-index:2;background:#f8fafc}.certificate-actions{position:sticky;bottom:0;background:#f8fafc}.certificate-actions button{flex:1}.certificate-toolbar span{display:none}}
     @media print{body>*:not(#certificateModal){display:none!important}.certificate-modal{position:static;padding:0;background:#fff}.certificate-toolbar,.certificate-actions{display:none!important}.certificate-dialog,.certificate-preview{padding:0;max-height:none;overflow:visible;box-shadow:none}.certificate-preview .certificate-sheet{width:297mm;height:210mm;min-width:0;box-shadow:none}}
   `;
   document.head.appendChild(style);
