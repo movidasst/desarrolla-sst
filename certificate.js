@@ -14,6 +14,9 @@
     { code: 'pensamiento_critico', name: 'Pensamiento crítico', result: 'desarrolla-pensamiento-v1', keys: ['desarrolla-crit-learn-v1', 'desarrolla-crit-role-v1', 'desarrolla-crit-plan-v1'], badge: 'pensamiento-critico.svg' },
     { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1'], badge: 'gestion-emocional.svg' }
   ];
+  const serverEligible = new Map();
+  let eligibilityLoading = false;
+  let eligibilityLoadedFor = '';
 
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -53,6 +56,7 @@
     return `
       <article class="certificate-sheet">
         <div class="certificate-frame">
+          ${data.prueba ? '<div class="certificate-watermark">MODO DE PRUEBA</div>' : ''}
           <div class="certificate-topline"></div>
           <header class="certificate-header">
             <img class="certificate-logo" src="${LOGO}" alt="La Movida de SST+">
@@ -116,6 +120,7 @@
     return `
       .certificate-sheet{font-family:Outfit,Arial,sans-serif;color:#00205b;background:#f8fafc;aspect-ratio:1.414/1;box-shadow:0 20px 55px rgba(0,32,91,.22)}
       .certificate-frame{position:relative;height:100%;padding:4.2%;overflow:hidden;background:radial-gradient(circle at 12% 12%,rgba(0,123,133,.12),transparent 25%),radial-gradient(circle at 88% 85%,rgba(255,182,0,.14),transparent 28%),#fff;border:12px solid #00205b;box-shadow:inset 0 0 0 4px #007b85}
+      .certificate-watermark{position:absolute;inset:42% auto auto 50%;transform:translate(-50%,-50%) rotate(-18deg);white-space:nowrap;font-size:70px;font-weight:900;letter-spacing:.12em;color:rgba(190,45,45,.09);pointer-events:none}
       .certificate-topline,.certificate-bottomline{position:absolute;left:4%;right:4%;height:6px;background:linear-gradient(90deg,#00205b,#007b85,#70ad47,#ffb600)}.certificate-topline{top:3.2%}.certificate-bottomline{bottom:3.2%}
       .certificate-header{display:grid;grid-template-columns:110px 1fr 95px;align-items:center;gap:24px}.certificate-logo{width:105px;height:105px;object-fit:contain}.certificate-badge{width:90px;height:105px;object-fit:contain;justify-self:end}.certificate-header div{text-align:center}.certificate-header p{margin:0;font-size:22px;font-weight:900;letter-spacing:.14em}.certificate-header span{font-size:13px;color:#007b85;font-weight:800;letter-spacing:.1em}
       .certificate-main{text-align:center;padding:5px 7% 0}.certificate-overline{margin:0;color:#007b85;font-size:14px;font-weight:900;letter-spacing:.2em}.certificate-main h1{margin:11px 0 3px;font:600 25px Georgia,serif;color:#475569}.certificate-main h2{display:inline-block;margin:4px 0 3px;padding:0 35px 8px;border-bottom:2px solid #ffb600;font:700 42px Georgia,serif;color:#00205b}.certificate-document{margin:5px 0 11px;color:#64748b;font-size:13px}.certificate-copy{margin:5px 0;color:#475569;font-size:17px}.certificate-main h3{margin:9px auto;color:#007b85;font-size:29px;line-height:1.15;max-width:850px}.certificate-route{display:inline-block;margin:6px 0;padding:7px 18px;border-radius:999px;background:#eef8f7;color:#00205b;font-weight:800;letter-spacing:.08em}.certificate-date{margin:12px 0 0;font-size:15px;color:#475569}
@@ -137,11 +142,46 @@
     }
   }
 
+  async function loadEligibility() {
+    if (eligibilityLoading) return;
+    const token = sessionStorage.getItem(TOKEN);
+    if (!token || eligibilityLoadedFor === token) return;
+    eligibilityLoading = true;
+    try {
+      const response = await fetch(`${URL}/rest/v1/rpc/desarrolla_rutas_certificables`, {
+        method: 'POST',
+        headers: { apikey: KEY, Authorization: `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: token })
+      });
+      const data = await response.json();
+      if (data?.ok && Array.isArray(data.rutas)) {
+        serverEligible.clear();
+        data.rutas.forEach(route => serverEligible.set(route.codigo, route));
+        eligibilityLoadedFor = token;
+      }
+    } catch (error) {
+      console.error('No se pudieron consultar las rutas certificables.', error);
+    } finally {
+      eligibilityLoading = false;
+      mountButtons();
+    }
+  }
+
   function mountButtons() {
     const cards = document.querySelectorAll('#globalProgress .competency-progress article');
     cards.forEach((card, index) => {
       const route = ROUTES[index];
-      if (!route || !complete(route) || card.querySelector('.certificate-button')) return;
+      const serverRoute = route ? serverEligible.get(route.code) : null;
+      if (!route || (!complete(route) && !serverRoute)) return;
+      if (serverRoute?.prueba) {
+        card.querySelectorAll('.cp-stages span').forEach(stage => {
+          stage.classList.add('done');
+          stage.textContent = '✓ ' + stage.textContent.replace(/^[✓○]\s*/, '');
+        });
+        const detail = card.querySelector('.cp-title small');
+        if (detail) detail.textContent = '4/4 etapas · modo de prueba';
+      }
+      if (card.querySelector('.certificate-button')) return;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'certificate-button';
@@ -149,6 +189,17 @@
       button.onclick = () => handle(button, route);
       card.appendChild(button);
     });
+    if (serverEligible.size === ROUTES.length && Array.from(serverEligible.values()).every(route => route.prueba)) {
+      const summary = document.querySelector('#globalProgress .progress-summary');
+      const title = summary?.querySelector('h2');
+      const detail = summary?.querySelector('p:not(.kicker)');
+      const ring = summary?.querySelector('.progress-ring');
+      const ringText = ring?.querySelector('span');
+      if (title) title.textContent = '100% completado · prueba';
+      if (detail) detail.textContent = '24 de 24 etapas · 6 de 6 rutas habilitadas para prueba';
+      if (ring) ring.style.setProperty('--p', '100');
+      if (ringText) ringText.textContent = '100%';
+    }
   }
 
   const style = document.createElement('style');
@@ -162,6 +213,6 @@
   document.head.appendChild(style);
 
   const progress = document.getElementById('progress');
-  if (progress) new MutationObserver(() => setTimeout(mountButtons, 50)).observe(progress, { childList: true, subtree: true, attributes: true });
-  setTimeout(mountButtons, 300);
+  if (progress) new MutationObserver(() => setTimeout(() => { mountButtons(); loadEligibility(); }, 50)).observe(progress, { childList: true, subtree: true, attributes: true });
+  setTimeout(() => { mountButtons(); loadEligibility(); }, 300);
 })();
