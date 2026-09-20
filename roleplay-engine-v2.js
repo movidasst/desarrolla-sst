@@ -64,9 +64,9 @@ function adapt(options,state,step){const list=options.map(x=>[...x]);if(!state||
 function tone(n){return n>=70?"high":n>=40?"medium":"low"}
 function meter(state){const s=state||start();syncModeClass();const metrics=[["Confianza",s.trust??50],["Control preventivo",s.control??50],["Evidencia",s.evidence??50],["Trazabilidad",s.traceability??50]];
  return`<div class="rp-mode" aria-label="Modo de práctica"><span>Modo</span><button type="button" class="rp-mode-btn ${mode()==="training"?"active":""}" data-mode="training" onclick="RoleplayBranching.setMode('training')">Entrenamiento</button><button type="button" class="rp-mode-btn ${mode()==="evaluation"?"active":""}" data-mode="evaluation" onclick="RoleplayBranching.setMode('evaluation')">Evaluación</button><small>${mode()==="evaluation"?"Sin pistas hasta el cierre":"Retroalimentación inmediata"}</small></div><div class="branch-meters" aria-label="Estado de la simulación">${metrics.map(([k,v])=>`<div><span>${k}</span><b>${v}%</b><i><em class="${tone(v)}" style="width:${v}%"></em></i></div>`).join("")}</div>`}
-function challengeFor(state,domain){const group=CHALLENGES[domain]||CHALLENGES.negotiation;return state.last<0?group.risk:state.last<2?group.partial:group.strong}
+function challengeFor(state,domain){const group=CHALLENGES[domain]||CHALLENGES.negotiation;if(state.hadRisk&&!state.recovered&&(state.baseAdvances||0)>=3)return group.risk;return state.last<0?group.risk:state.last<2?group.partial:group.strong}
 function advance(cfg){let s={...(cfg.state||start())};s.baseAdvances=(s.baseAdvances||0)+1;
- const should=s.baseAdvances<=2&&(s.challengeCount||0)<2;
+ const difficult=s.hadRisk||s.trust<75||s.control<80||s.evidence<70,finalRecovery=s.baseAdvances===3&&s.hadRisk&&!s.recovered&&s.control<65&&(s.challengeCount||0)<3;const should=s.baseAdvances===1||(s.baseAdvances===2&&difficult&&(s.challengeCount||0)<2)||finalRecovery;
  if(!should){cfg.next(s);return}
  const ch=challengeFor(s,cfg.domain),root=document.getElementById(cfg.root);if(!root||!ch){cfg.next(s);return}
  s.challengeCount=(s.challengeCount||0)+1;
