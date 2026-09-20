@@ -3,7 +3,7 @@
 @media(max-width:620px){.hero h1{font-size:2.65rem}.featured{grid-template-columns:auto 1fr}.featured>.primary{grid-column:1/-1}.grid{grid-template-columns:1fr}.principle{grid-template-columns:1fr}.facts{display:grid;grid-template-columns:repeat(3,1fr)}.site-footer{display:grid;gap:7px}}
 
 [hidden]{display:none!important}
-.module.communication,.result-hero.communication{background:linear-gradient(135deg,#005b64,#007b85 58%,#4d8a31)}.module.leadership,.result-hero.leadership{background:linear-gradient(135deg,#00205b,#164a82 58%,#007b85)}.progress-card{margin-top:18px}
+.module.communication,.result-hero.communication{background:linear-gradient(135deg,#005b64,#007b85 58%,#4d8a31)}.module.leadership,.result-hero.leadership{background:linear-gradient(135deg,#00205b,#164a82 58%,#007b85)}.module.influence,.result-hero.influence{background:linear-gradient(135deg,#38255f,#68469a 58%,#007b85)}.progress-card{margin-top:18px}
 .site-footer::after{content:"Elaborado por David Linares Brea · WhatsApp +56 9 6861 5650";color:var(--navy);font-weight:700}
 
 /* Logo oficial vigente de la página principal */
