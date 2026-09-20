@@ -146,21 +146,27 @@ function summarize(results){
    median_score:median(rows.filter(x=>!x.error).map(x=>x.score))
   };
  }
+ const passRate=pct(passed,total);
+ const criticalRecall=pct(tp,tp+fn);
+ const consistencyRate=consistencyGroups?pct(consistent,consistencyGroups):null;
+ const qualityGate=passRate>=80&&criticalRecall>=95&&fn===0&&(consistencyRate==null||consistencyRate>=80)&&total-ok.length===0;
  return{
   total_attempts:total,
   successful:ok.length,
   errors:total-ok.length,
   passed,
-  pass_rate:pct(passed,total),
+  pass_rate:passRate,
   range_pass_rate:pct(rangePassed,total),
   critical_accuracy:pct(criticalPassed,total),
-  critical_recall:pct(tp,tp+fn),
+  critical_recall:criticalRecall,
   critical_precision:pct(tp,tp+fp),
   false_positives:fp,
   false_negatives:fn,
   mean_abs_midpoint_deviation:Math.round(mean(deviation)*10)/10,
   consistency_groups:consistencyGroups,
-  consistency_pass_rate:consistencyGroups?pct(consistent,consistencyGroups):null,
+  consistency_pass_rate:consistencyRate,
+  quality_gate:qualityGate,
+  quality_gate_rule:"Aprobación ≥80%, recall crítico ≥95%, 0 falsos negativos críticos, consistencia ≥80% cuando aplica y 0 errores técnicos.",
   by_competency:byComp
  };
 }
@@ -180,6 +186,7 @@ function render(summary,results,meta){
  $("calReport").hidden=false;
  $("calCsv").disabled=false;
  $("calMetrics").innerHTML=[
+  ["Gate de calidad",summary.quality_gate?"APROBADO":"REVISAR"],
   ["Aprobación global",summary.pass_rate+"%"],
   ["Rango esperado",summary.range_pass_rate+"%"],
   ["Detección crítica",summary.critical_accuracy+"%"],
@@ -190,7 +197,7 @@ function render(summary,results,meta){
   ["Consistencia",summary.consistency_pass_rate==null?"—":summary.consistency_pass_rate+"%"]
  ].map(x=>`<article><span>${x[0]}</span><b>${x[1]}</b></article>`).join("");
 
- $("calReportMeta").textContent=`${meta.tests} casos · ${meta.repetitions} repetición${meta.repetitions===1?"":"es"} · ${meta.model||"modelo no reportado"} · banco ${bank.version}`;
+ $("calReportMeta").textContent=`${meta.tests} casos · ${meta.repetitions} repetición${meta.repetitions===1?"":"es"} · ${meta.model||"modelo no reportado"} · banco ${bank.version} · ${summary.quality_gate?"gate aprobado":"requiere revisión"}`;
 
  const cards=Object.entries(summary.by_competency).map(([key,value])=>`
   <article>
