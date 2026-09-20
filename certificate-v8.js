@@ -417,8 +417,8 @@
     cards.forEach((card, index) => {
       const route = ROUTES[index];
       const serverRoute = route ? serverEligible.get(route.code) : null;
-      card.querySelector('.certificate-button, .payment-button')?.remove();
-      if (!route || !serverRoute) return;
+      const existingButton = card.querySelector('.certificate-button, .payment-button');
+      if (!route || !serverRoute) { existingButton?.remove(); return; }
       if (serverRoute.prueba) {
         card.querySelectorAll('.cp-stages span').forEach(stage => {
           stage.classList.add('done');
@@ -427,8 +427,12 @@
         const detail = card.querySelector('.cp-title small');
         if (detail) detail.textContent = '5/5 etapas · modo de prueba';
       }
+      const buttonState = serverRoute.pago_estado === 'validado' ? 'certificate' : `payment-${serverRoute.pago_estado || 'sin_reportar'}`;
+      if (existingButton?.dataset.state === buttonState) return;
+      existingButton?.remove();
       const button = document.createElement('button');
       button.type = 'button';
+      button.dataset.state = buttonState;
       if (serverRoute.pago_estado === 'validado') {
         button.className = 'certificate-button';
         button.innerHTML = '<span>▣</span> Descargar certificado';
