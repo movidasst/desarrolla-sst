@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const VERSION="2026-09-20-v1";
+const VERSION="2026-09-20-v2-finance";
 const ranges={strong:[80,100],adequate:[60,82],weak:[25,59],critical:[0,49]};
 const C={
  negotiation:[
@@ -102,6 +102,26 @@ const C={
    ["critical","Ajustaría los registros que no encajan para que la evidencia quede coherente con la causa acordada."]
   ]]
  ],
+ finance:[
+  ["F1","Director Financiero","Sistema de extracción de USD 85.000","Una exposición relevante requiere un sistema de extracción localizada y Finanzas cuestiona la inversión.","¿Qué obtiene la empresa por ese dinero?","Construir una propuesta de inversión comprensible y trazable.","No manipular cifras ni subordinar un control necesario a la rentabilidad.",[
+   ["strong","Presentaría CAPEX, OPEX, TCO, beneficios estimados, supuestos y alternativas, además del riesgo residual y la decisión requerida. Separaría los datos confirmados de los costos evitados estimados."],
+   ["adequate","Explicaría el costo de la inversión, los ahorros esperados y el riesgo que se reduce, aclarando que algunos beneficios son estimaciones."],
+   ["weak","Diría que la seguridad no tiene precio y que la inversión debe aprobarse porque evitará accidentes."],
+   ["critical","Aumentaría la probabilidad y el costo de un accidente hasta que el ROI quede positivo y sea más fácil aprobarlo."]
+  ]],
+  ["F2","Compras","Opción económica vs costo total","Dos controles cumplen inicialmente; uno cuesta menos, pero requiere más mantenimiento y tiene menor vida útil.","El A cuesta 12.000 menos. ¿Por qué quiere el B?","Comparar alternativas por costo total y desempeño preventivo.","No ocultar costos o limitaciones materiales.",[
+   ["strong","Compararía CAPEX, OPEX, vida útil, mantenimiento, productividad, TCO, eficacia y riesgo residual. Si B sigue siendo preferible, explicaría exactamente qué supuesto sostiene esa recomendación."],
+   ["adequate","Compararía el precio inicial con mantenimiento, vida útil y eficacia antes de recomendar."],
+   ["weak","Elegiría B porque parece de mejor calidad aunque todavía no tengo el costo total."],
+   ["critical","Omitiría el mantenimiento adicional de B para que la comparación financiera favorezca la alternativa que prefiero."]
+  ]],
+  ["F3","Director Financiero","Proyecto con ROI negativo","Una medida necesaria para controlar una exposición tiene retorno financiero estimado negativo.","Si el ROI es negativo, no lo hacemos.","Defender una decisión preventiva sin falsificar rentabilidad.","No descartar un control necesario únicamente por ROI negativo.",[
+   ["strong","El ROI informa la forma de implementación, pero no elimina la necesidad de controlar esta exposición. Revisemos alternativas, fases y costo total para cumplir el objetivo preventivo con la mejor eficiencia posible."],
+   ["adequate","Explicaría que el ROI no es el único criterio y buscaría una opción de menor costo que mantenga el control requerido."],
+   ["weak","Insistiría en que la seguridad está por encima del dinero sin presentar alternativas ni estructura económica."],
+   ["critical","Aceptaría mantener la exposición mientras no podamos demostrar un ROI positivo."]
+  ]]
+ ],
  emotional:[
   ["E1","Supervisor hostil","Cuestionamiento público","Un supervisor ridiculiza tu recomendación delante del equipo.","Otra vez SST frenando el trabajo por teorías.","Regular la respuesta, sostener respeto y volver al riesgo.","No ceder control crítico ni responder con humillación.",[
    ["strong","No voy a responder en el mismo tono. Volvamos al riesgo concreto y al control que falta; si quieres, revisamos la evidencia al terminar, pero no continuaré la tarea sin esa condición."],
@@ -124,5 +144,5 @@ const C={
  ]
 };
 const tests=[];for(const [competency,scenarios] of Object.entries(C))for(const s of scenarios){const[id,actor,caseName,context,opening,goal,limit,answers]=s;for(const[level,answer] of answers)tests.push({id:`${id}-${level[0].toUpperCase()}`,competency,level,answer,expected:{min:ranges[level][0],max:ranges[level][1],critical:level==="critical"},scenario:{actor,caseName,context,opening,goal,limit}})}
-window.DesarrollaCalibrationBank={version:VERSION,tests,competencies:{negotiation:"Negociación",communication:"Comunicación asertiva",leadership:"Liderazgo preventivo",influence:"Influencia estratégica",critical:"Pensamiento crítico",emotional:"Gestión emocional"}};
+window.DesarrollaCalibrationBank={version:VERSION,tests,competencies:{negotiation:"Negociación",communication:"Comunicación asertiva",leadership:"Liderazgo preventivo",influence:"Influencia estratégica",critical:"Pensamiento crítico",emotional:"Gestión emocional",finance:"Finanzas y Valor Preventivo"}};
 })();
