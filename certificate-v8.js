@@ -13,7 +13,7 @@
     { code: 'influencia_estrategica', name: 'Influencia estratégica', result: 'desarrolla-influencia-v1', keys: ['desarrolla-inf-learn-v1', 'desarrolla-inf-role-v1', 'desarrolla-inf-plan-v1', 'desarrolla-inf-final-v2'], badge: 'influencia-estrategica.svg' },
     { code: 'pensamiento_critico', name: 'Pensamiento crítico', result: 'desarrolla-pensamiento-v1', keys: ['desarrolla-crit-learn-v1', 'desarrolla-crit-role-v1', 'desarrolla-crit-plan-v1', 'desarrolla-crit-final-v2'], badge: 'pensamiento-critico.svg' },
     { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1', 'desarrolla-emo-final-v2'], badge: 'gestion-emocional.svg' },
-    { code: 'finanzas_sst', name: 'Finanzas y Valor Preventivo en SST', result: 'desarrolla-finanzas-v1', keys: ['desarrolla-fin-learn-v1', 'desarrolla-fin-role-v1', 'desarrolla-fin-plan-v1', 'desarrolla-fin-final-v2'], badge: null }
+    { code: 'finanzas_sst', name: 'Finanzas y Valor Preventivo en SST', result: 'desarrolla-finanzas-v1', keys: ['desarrolla-fin-learn-v1', 'desarrolla-fin-role-v1', 'desarrolla-fin-plan-v1', 'desarrolla-fin-final-v2'], badge: 'finanzas-valor-preventivo.svg' }
   ];
   const PROGRAMS = {
     negociacion: ['Conflicto, posiciones, intereses y necesidades', 'Preparación: actores, evidencia, límites y alternativas', 'Escucha activa y comunicación proporcional del riesgo', 'Negociación colaborativa y criterios objetivos', 'Conversaciones con trabajadores, sindicatos, dirección, autoridad y comunidad', 'Acuerdos verificables, responsables, plazos y seguimiento'],
@@ -80,7 +80,6 @@
     return `
       <article class="certificate-sheet">
         <div class="certificate-frame">
-          ${data.prueba ? '<div class="certificate-watermark">MODO DE PRUEBA</div>' : ''}
           <div class="certificate-topline"></div>
           <header class="certificate-header">
             <img class="certificate-logo" src="${LOGO}" alt="La Movida de SST+">
@@ -209,13 +208,6 @@
     doc.setTextColor(0, 123, 133); doc.setFontSize(8); doc.text(subheading, 148.5, 35, { align: 'center', maxWidth: 170 });
   }
 
-  function watermark(doc) {
-    doc.setFillColor(255, 241, 242); doc.setDrawColor(225, 29, 72); doc.setLineWidth(.35);
-    doc.roundedRect(122, 187, 53, 7, 3.5, 3.5, 'FD');
-    doc.setTextColor(190, 18, 60); doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5);
-    doc.text('CERTIFICADO DE PRUEBA', 148.5, 191.7, { align: 'center' });
-  }
-
   async function downloadPdf(data, route, button) {
     const original = button.textContent; button.disabled = true; button.textContent = 'Generando PDF…';
     try {
@@ -248,7 +240,6 @@
       doc.setFont('helvetica', 'normal'); doc.setFontSize(6.5); doc.setTextColor(0, 123, 133); doc.textWithLink('Verificar autenticidad en desarrolla.movidasst.com', 27, 183, { url: verificationUrl });
       doc.setFont('times', 'italic'); doc.setFontSize(16); doc.text('David Linares Brea', 244, 166, { align: 'center' }); doc.setDrawColor(0, 32, 91); doc.line(214, 170, 274, 170);
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.text('David Linares Brea', 244, 176, { align: 'center' }); doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.text('FIRMA AUTORIZADA', 244, 181, { align: 'center' });
-      if (data.prueba) watermark(doc);
 
       doc.addPage('a4', 'landscape');
       doc.setFillColor(248, 250, 252); doc.rect(0, 0, 297, 210, 'F');
@@ -421,14 +412,6 @@
       const serverRoute = route ? serverEligible.get(route.code) : null;
       const existingButton = card.querySelector('.certificate-button, .payment-button');
       if (!route || !serverRoute) { existingButton?.remove(); return; }
-      if (serverRoute.prueba) {
-        card.querySelectorAll('.cp-stages span').forEach(stage => {
-          stage.classList.add('done');
-          stage.textContent = '✓ ' + stage.textContent.replace(/^[✓○]\s*/, '');
-        });
-        const detail = card.querySelector('.cp-title small');
-        if (detail) detail.textContent = '5/5 etapas · modo de prueba';
-      }
       const buttonState = serverRoute.pago_estado === 'validado' ? 'certificate' : `payment-${serverRoute.pago_estado || 'sin_reportar'}`;
       if (existingButton?.dataset.state === buttonState) return;
       existingButton?.remove();
@@ -450,17 +433,6 @@
       }
       card.appendChild(button);
     });
-    if (serverEligible.size === ROUTES.length && Array.from(serverEligible.values()).every(route => route.prueba)) {
-      const summary = document.querySelector('#globalProgress .progress-summary');
-      const title = summary?.querySelector('h2');
-      const detail = summary?.querySelector('p:not(.kicker)');
-      const ring = summary?.querySelector('.progress-ring');
-      const ringText = ring?.querySelector('span');
-      if (title) title.textContent = '100% completado · prueba';
-      if (detail) detail.textContent = '30 de 30 etapas · certificados sujetos a validación de pago';
-      if (ring) ring.style.setProperty('--p', '100');
-      if (ringText) ringText.textContent = '100%';
-    }
   }
 
   const style = document.createElement('style');
