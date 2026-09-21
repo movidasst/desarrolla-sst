@@ -28,7 +28,11 @@ async function submit(cfg,state){
  if(!token){if(err)err.textContent="Tu sesión de integrante no está disponible. Sal e ingresa nuevamente.";return}
  state.busy=true;const send=document.getElementById("rpAiSend");if(send){send.disabled=true;send.textContent="Analizando tu intervención…"}if(err)err.textContent="";
  try{
-  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({token,case_id:cfg.actor?.caseId||null,competency:cfg.competency,turn:state.turn,respuesta:answer,historial:historyOf(cfg),scenario:scenario(cfg.actor)})});
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),65000);
+  let r;
+  try{
+    r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},signal:controller.signal,body:JSON.stringify({token,case_id:cfg.actor?.caseId||null,competency:cfg.competency,turn:state.turn,respuesta:answer,historial:historyOf(cfg),scenario:scenario(cfg.actor)})});
+  }finally{clearTimeout(timeout)}
   const d=await r.json().catch(()=>({}));if(!r.ok||!d?.ok)throw Error(d?.message||"La evaluación con IA no está disponible.");
   const ev=d.evaluation,p=qualityPoint(ev),feedback=[ev.fortaleza,ev.oportunidad].filter(Boolean).join(" ");
   cfg.pushTrace({choice:answer,points:p,feedback,ai:true,evaluation:ev,reaction:ev.reaccion,model:d.model,status:ev?.conversation?.status||"continue"});
@@ -36,7 +40,7 @@ async function submit(cfg,state){
   cfg.setBranch(RoleplayBranching.applyAssessment(cfg.getBranch(),ev,{choice:answer,feedback,domain:cfg.competency,ai:true}));
   state.prompt=ev.reaccion||"Necesito que concretemos qué haría ahora y cómo verificaremos el resultado.";state.ended=Boolean(ev?.conversation?.should_end);
   render(cfg,state,{evaluation:ev});
- }catch(e){if(err)err.textContent=String(e?.message||e||"No se pudo evaluar la respuesta.");if(send){send.disabled=false;send.textContent="Reintentar evaluación →"}}finally{state.busy=false}
+ }catch(e){const timeout=e?.name==="AbortError";if(err)err.textContent=timeout?"La evaluación tardó más de lo esperado. Tu respuesta no se perdió: vuelve a intentarlo.":String(e?.message||e||"No se pudo evaluar la respuesta.");if(send){send.disabled=false;send.textContent="Reintentar evaluación →"}}finally{state.busy=false}
 }
 const style=document.createElement("style");style.textContent=`.ai-pilot-callout{display:grid;gap:4px;margin:16px 0;padding:14px 16px;border:1px solid #b9dadd;border-radius:14px;background:#f2fbfb}.ai-pilot-callout b{color:#007b85}.ai-pilot-callout span{color:#475569;font-size:.9rem}.ai-response-box{margin-top:18px}.ai-response-box label{display:block;margin-bottom:8px;color:#00205b}.ai-response-box textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:130px;border:1px solid #cbd5e1;border-radius:14px;padding:13px 14px;font:inherit;line-height:1.5;color:#1e293b;background:#fff}.ai-response-box textarea:focus{outline:3px solid rgba(0,123,133,.15);border-color:#007b85}.ai-help{font-size:.82rem;color:#64748b;margin:7px 0 0}.ai-role-card .feedback p{margin:7px 0}.ai-role-card .role-meter:after{content:"Trayectoria adaptativa · mínimo 3, máximo 6";display:block;margin-top:7px;font-size:.72rem;color:#64748b}.ai-role-card .route-buttons{flex-wrap:wrap}.ai-rubric-mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ai-rubric-mini span{font-size:.74rem;background:#fff;border:1px solid #dce5ed;border-radius:999px;padding:4px 8px;color:#475569}.rp-evaluation .ai-rubric-mini{display:none!important}@media(max-width:620px){.ai-role-card .route-buttons>button{width:100%}}`;document.head.appendChild(style);
 window.RoleplayAI={attach};
