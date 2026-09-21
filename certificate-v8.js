@@ -268,7 +268,6 @@
       if (qr) doc.addImage(qr, 'PNG', 25, 180, 12, 12, undefined, 'FAST');
       doc.setTextColor(0, 32, 91); doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.textWithLink(data.codigo, 40, 186, { url: verificationUrl }); doc.setFont('helvetica', 'normal'); doc.setTextColor(100, 116, 139); doc.text('La Academia Movida de SST · www.movidasst.com', 272, 187, { align: 'right' });
       doc.setTextColor(0, 123, 133); doc.setFontSize(6.5); doc.textWithLink('Escanear QR o verificar certificado', 40, 191, { url: verificationUrl });
-      if (data.prueba) watermark(doc);
       doc.setProperties({ title: `Certificado - ${data.nombre}`, author: 'La Academia Movida de SST', creator: 'Desarrolla SST' });
       doc.save(`Certificado-${route.code}-${data.nombre.replace(/[^a-z0-9]+/gi, '-')}.pdf`);
       notice('Certificado de dos páginas descargado.');
@@ -281,7 +280,6 @@
     return `
       .certificate-sheet{font-family:Outfit,Arial,sans-serif;color:#00205b;background:#f8fafc;aspect-ratio:1.414/1;box-shadow:0 20px 55px rgba(0,32,91,.22)}
       .certificate-frame{position:relative;height:100%;padding:4.2%;overflow:hidden;background:radial-gradient(circle at 12% 12%,rgba(0,123,133,.12),transparent 25%),radial-gradient(circle at 88% 85%,rgba(255,182,0,.14),transparent 28%),#fff;border:12px solid #00205b;box-shadow:inset 0 0 0 4px #007b85}
-      .certificate-watermark{position:absolute;inset:42% auto auto 50%;transform:translate(-50%,-50%) rotate(-18deg);white-space:nowrap;font-size:70px;font-weight:900;letter-spacing:.12em;color:rgba(190,45,45,.09);pointer-events:none}
       .certificate-topline,.certificate-bottomline{position:absolute;left:4%;right:4%;height:6px;background:linear-gradient(90deg,#00205b,#007b85,#70ad47,#ffb600)}.certificate-topline{top:3.2%}.certificate-bottomline{bottom:3.2%}
       .certificate-header{display:grid;grid-template-columns:110px 1fr 95px;align-items:center;gap:24px}.certificate-logo{width:105px;height:105px;object-fit:contain}.certificate-badge{width:90px;height:105px;object-fit:contain;justify-self:end}.certificate-header div{text-align:center}.certificate-header p{margin:0;font-size:22px;font-weight:900;letter-spacing:.14em}.certificate-header span{font-size:13px;color:#007b85;font-weight:800;letter-spacing:.1em}
       .certificate-main{text-align:center;padding:5px 7% 0}.certificate-overline{margin:0;color:#007b85;font-size:14px;font-weight:900;letter-spacing:.2em}.certificate-main h1{margin:11px 0 3px;font:600 25px Georgia,serif;color:#475569}.certificate-main h2{display:inline-block;margin:4px 0 3px;padding:0 35px 8px;border-bottom:2px solid #ffb600;font:700 42px Georgia,serif;color:#00205b}.certificate-document{margin:5px 0 11px;color:#64748b;font-size:13px}.certificate-copy{margin:5px 0;color:#475569;font-size:17px}.certificate-main h3{margin:9px auto;color:#007b85;font-size:29px;line-height:1.15;max-width:850px}.certificate-route{display:inline-block;margin:6px 0;padding:7px 18px;border-radius:999px;background:#eef8f7;color:#00205b;font-weight:800;letter-spacing:.08em}.certificate-date{margin:12px 0 0;font-size:15px;color:#475569}
