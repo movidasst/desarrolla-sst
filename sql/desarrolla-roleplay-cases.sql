@@ -173,3 +173,20 @@ values
 on conflict (competency,legacy_key) where legacy_key is not null do update set
  icon=excluded.icon,actor_name=excluded.actor_name,case_name=excluded.case_name,context=excluded.context,opening=excluded.opening,
  goal=excluded.goal,limit_text=excluded.limit_text,guided_choices=excluded.guided_choices,sort_order=excluded.sort_order,updated_at=now();
+
+
+-- Progresión guiada por dificultad: los casos base avanzan de 1 a 3 eventos adaptativos.
+update private.desarrolla_roleplay_cases
+set difficulty = case
+  when sort_order <= 2 then 2
+  when sort_order <= 4 then 3
+  else 4
+end,
+updated_at=now()
+where source='builtin'
+  and competency in ('negotiation','communication','leadership','influence','critical','emotional');
+
+update private.desarrolla_roleplay_cases
+set ai_only=false,
+    active=case when jsonb_array_length(coalesce(guided_choices,'[]'::jsonb))>=3 then active else false end,
+    updated_at=now();
