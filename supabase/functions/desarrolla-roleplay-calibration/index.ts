@@ -6,9 +6,9 @@ type Criterion={key:string;label:string;max:number;axis:Axis;description:string}
 type Competency={title:string;criteria:Criterion[];critical:string};
 type ModelInfo={name?:string;baseModelId?:string;supportedGenerationMethods?:string[]};
 
-const PRIMARY_MODEL="gemini-3.6-flash";
+const PRIMARY_MODEL="gemini-3.8-flash";
 const ALLOWED_ORIGINS=new Set(["https://desarrolla.movidasst.com","https://movidasst.github.io"]);
-const RETRYABLE=new Set([429,500,502,503,504]);
+const RETRYABLE=new Set([0,429,500,502,503,504]);
 const MODEL_CACHE_MS=10*60*1000;
 let modelCache:{at:number;models:ModelInfo[]}={at:0,models:[]};
 const buckets=new Map<string,{at:number;count:number}>();
@@ -99,7 +99,7 @@ function modelId(m:ModelInfo){return String(m.baseModelId||m.name||"").replace(/
 function usable(id:string){return /^gemini-3\./i.test(id)&&!/(embedding|image|tts|audio|live|robotics|computer-use|deep-research)/i.test(id)}
 async function models(apiKey:string,force=false){if(!force&&modelCache.models.length&&Date.now()-modelCache.at<MODEL_CACHE_MS)return modelCache.models;const r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000",{headers:{"x-goog-api-key":apiKey},signal:AbortSignal.timeout(12000)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(String(d?.error?.message||`models.list ${r.status}`));const ms=(Array.isArray(d.models)?d.models:[]).filter((m:ModelInfo)=>Array.isArray(m.supportedGenerationMethods)&&m.supportedGenerationMethods.includes("generateContent")&&usable(modelId(m)));modelCache={at:Date.now(),models:ms};return ms}
 function candidates(ms:ModelInfo[]){const ids=[...new Set(ms.map(modelId).filter(Boolean))],out:string[]=[];const push=(x:string)=>{if(ids.includes(x)&&!out.includes(x))out.push(x)};push(PRIMARY_MODEL);ids.filter(x=>/flash/i.test(x)&&!/(preview|experimental|exp|-latest$|lite)/i.test(x)).forEach(push);ids.filter(x=>/flash/i.test(x)&&/lite/i.test(x)).forEach(push);ids.forEach(push);return out.slice(0,2)}
-async function generate(apiKey:string,mid:string,prompt:string){const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(mid)}:generateContent`,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:AbortSignal.timeout(30000),body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json",temperature:0.12,maxOutputTokens:2400,thinkingConfig:{thinkingLevel:"low"}}})});const d=await r.json().catch(()=>({}));return{ok:r.ok,status:r.status,data:d,model:mid}}
+async function generate(apiKey:string,mid:string,prompt:string){try{const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(mid)}:generateContent`,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":apiKey},signal:AbortSignal.timeout(30000),body:JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{responseMimeType:"application/json",temperature:0.12,maxOutputTokens:2400,thinkingConfig:{thinkingLevel:"low"}}})});const d=await r.json().catch(()=>({}));return{ok:r.ok,status:r.status,data:d,model:mid}}catch(e){return{ok:false,status:0,data:{error:{message:String((e as any)?.message||e)}},model:mid}}}
 function validate(comp:Competency,raw:any,turn:number,history:any[]){
  const dimensions=comp.criteria.map(c=>({key:c.key,label:c.label,max:c.max,score:clamp(raw?.scores?.[c.key],0,c.max),axis:c.axis}));
  const total=dimensions.reduce((n,d)=>n+d.score,0),critical=Boolean(raw?.riesgo_critico),finalTotal=critical?Math.min(total,49):total;
@@ -204,9 +204,9 @@ Deno.serve(async(req:Request)=>{
   const body=await req.json().catch(()=>({})),tests=Array.isArray(body?.tests)?body.tests:[];
   if(!tests.length||tests.length>4)return json(req,{ok:false,error:"invalid_batch",message:"Envía entre 1 y 4 pruebas por lote."},400);
   const apiKey=geminiKey();if(!apiKey)throw new Error("GEMINI_API_KEY no está configurada.");
-  const available=await models(apiKey);
+  const available=[{name:"models/gemini-3.8-flash",baseModelId:"gemini-3.8-flash",supportedGenerationMethods:["generateContent"]},{name:"models/gemini-3.7-flash",baseModelId:"gemini-3.7-flash",supportedGenerationMethods:["generateContent"]},{name:"models/gemini-3.6-flash",baseModelId:"gemini-3.6-flash",supportedGenerationMethods:["generateContent"]}];
   const settled=await Promise.allSettled(tests.map((t:any)=>evaluateCalibrationCase(t,apiKey,available)));
   const results=settled.map((r,i)=>r.status==="fulfilled"?{ok:true,...r.value}:{ok:false,id:clean(tests[i]?.id,80),competency:clean(tests[i]?.competency,40),error:clean((r as PromiseRejectedResult).reason?.message||r.reason,500)});
-  return json(req,{ok:true,calibrationVersion:CALIBRATION_VERSION,results},{status:200,headers:{...cors(req),"Content-Type":"application/json; charset=utf-8"}});
+  return json(req,{ok:true,calibrationVersion:CALIBRATION_VERSION,results},200);
  }catch(e){console.error("desarrolla-roleplay-calibration",e);return json(req,{ok:false,error:"server_error",message:clean((e as any)?.message||e,500)},500)}
 });
