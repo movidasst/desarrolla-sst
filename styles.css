@@ -291,3 +291,6 @@ body.locked{background:#f8fbfc}
     font-size:clamp(2rem,2.5vw,2.55rem);
   }
 }
+
+/* Role play guiado sin IA */
+.actor-card small{display:block;margin-top:8px;color:#007b85;font-size:.76rem;font-weight:800}.adaptive-event{box-shadow:0 14px 30px rgba(0,32,91,.08)}
