@@ -76,3 +76,218 @@
  .login-mini-benefits{grid-template-columns:1fr}
  .register-card{padding:15px!important}
 }
+
+/* === Puerta de entrada Mobile First v5 === */
+html,body{max-width:100%;overflow-x:hidden}
+body.locked{background:#f8fbfc}
+
+#gate.gate{
+  display:block;
+  width:100%;
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 50% -8%,rgba(0,123,133,.10),transparent 34%),
+    linear-gradient(180deg,#ffffff 0%,#f7fbfc 100%);
+}
+
+#gate .gate-visual{display:none}
+
+#gate .login-wrap{
+  width:100%;
+  min-height:100dvh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:
+    max(16px,env(safe-area-inset-top))
+    14px
+    max(28px,env(safe-area-inset-bottom));
+  background:transparent;
+}
+
+#gate .login-shell{
+  width:100%;
+  max-width:560px;
+  min-width:0;
+}
+
+#gate .login{
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:18px 16px 20px;
+  border:1px solid #e4edf1;
+  border-radius:24px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 14px 38px rgba(0,32,91,.07);
+}
+
+#gate .mobile-logo-frame{
+  width:176px;
+  height:176px;
+  aspect-ratio:1/1;
+  margin:2px auto 18px;
+  padding:8px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border-radius:50%;
+  background:#fff;
+  border:5px solid #e6f4f5;
+  box-shadow:
+    0 14px 32px rgba(0,32,91,.15),
+    0 0 0 1px rgba(0,123,133,.08);
+}
+
+#gate .mobile-logo{
+  content:url("https://raw.githubusercontent.com/movidasst/geo/main/logo-oficial-movida-sst-plus.png");
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  transform:scale(1.05);
+}
+
+#gate .login-brandline{
+  margin:0 0 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-width:0;
+}
+
+#gate .login-brandline span{
+  min-width:0;
+  font-size:.76rem;
+  line-height:1.2;
+  letter-spacing:.11em;
+  white-space:nowrap;
+}
+
+#gate .login-brandline small{
+  flex:0 0 auto;
+  font-size:.78rem;
+  padding:6px 10px;
+}
+
+#gate .login h2{
+  margin:0 0 10px;
+  font-size:clamp(1.85rem,8vw,2.2rem);
+  line-height:1.02;
+  letter-spacing:-.045em;
+  text-wrap:balance;
+}
+
+#gate .login-lead{
+  margin:0 0 14px!important;
+  font-size:.95rem!important;
+  line-height:1.48!important;
+}
+
+#gate .login-mini-benefits{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin:12px 0 17px;
+}
+
+#gate .login-mini-benefits span{
+  min-width:0;
+  padding:9px 10px;
+  border:1px solid #e2ecef;
+  border-radius:11px;
+  background:#f7fbfc;
+  font-size:.79rem;
+  line-height:1.25;
+}
+
+#gate .login-divider{margin:18px 0 14px}
+#gate .access-help{font-size:.86rem!important;margin:0 0 8px!important}
+#gate .login label{margin:14px 0 7px}
+#gate .login input{min-height:50px;padding:13px 14px}
+#gate .message{margin:8px 0;min-height:18px}
+#gate #submit{min-height:52px;padding:14px 16px}
+
+#gate .register-card{
+  margin-top:18px!important;
+  padding:15px!important;
+  gap:10px!important;
+}
+
+#gate .register-card b{font-size:1rem}
+#gate .register-card p{font-size:.83rem}
+#gate .register-button{padding:12px 13px}
+
+@media(max-width:380px){
+  #gate .login{padding:16px 13px 18px;border-radius:20px}
+  #gate .mobile-logo-frame{width:158px;height:158px;margin-bottom:15px}
+  #gate .login-brandline{align-items:flex-start}
+  #gate .login-brandline span{font-size:.70rem}
+  #gate .login-brandline small{font-size:.70rem;padding:5px 8px}
+  #gate .login h2{font-size:1.72rem}
+  #gate .login-mini-benefits{grid-template-columns:1fr}
+}
+
+@media(min-width:600px){
+  #gate .login-wrap{padding:28px 22px 40px}
+  #gate .login{padding:26px 28px 28px}
+  #gate .mobile-logo-frame{width:190px;height:190px}
+  #gate .login h2{font-size:2.35rem}
+  #gate .login-mini-benefits span{font-size:.84rem}
+}
+
+@media(min-width:1024px){
+  #gate.gate{
+    display:grid;
+    grid-template-columns:minmax(0,1.05fr) minmax(430px,.95fr);
+    background:#fff;
+  }
+
+  #gate .gate-visual{
+    min-height:100vh;
+    display:flex;
+    padding:42px clamp(34px,5vw,76px);
+  }
+
+  #gate .gate-visual>img{
+    content:url("https://raw.githubusercontent.com/movidasst/geo/main/logo-oficial-movida-sst-plus.png");
+    width:210px;
+    height:210px;
+    max-height:none;
+    aspect-ratio:1/1;
+    padding:7px;
+    object-fit:cover;
+    object-position:center;
+    border:5px solid rgba(255,255,255,.75);
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 18px 45px rgba(0,0,0,.22);
+    animation:none;
+  }
+
+  #gate .login-wrap{
+    min-height:100vh;
+    align-items:center;
+    padding:34px;
+  }
+
+  #gate .login{
+    padding:30px;
+    border-radius:26px;
+  }
+
+  #gate .mobile-logo-frame{display:none}
+
+  #gate .login h2{
+    font-size:clamp(2rem,2.5vw,2.55rem);
+  }
+}
