@@ -294,3 +294,10 @@ body.locked{background:#f8fbfc}
 
 /* Role play guiado adaptativo */
 .actor-card small{display:block;margin-top:8px;color:#007b85;font-size:.76rem;font-weight:800}.adaptive-event{box-shadow:0 14px 30px rgba(0,32,91,.08)}
+
+/* Lanzamiento Octubre Fest 2026 */
+.launch-notice{margin:14px 0 18px;padding:17px;border:1px solid #d5e7e8;border-radius:18px;background:linear-gradient(135deg,#eefafa,#fff8df);text-align:left}
+.launch-kicker{display:block;color:#007b85;font-size:.74rem;font-weight:900;letter-spacing:.09em}
+.launch-notice h3{margin:5px 0 6px;color:#00205b;font-size:1.18rem}
+.launch-notice p{margin:0;color:#526274;font-size:.9rem;line-height:1.45}
+.launch-countdown{margin-top:12px;padding:11px 12px;border-radius:12px;background:#00205b;color:#fff;text-align:center;font-weight:900;letter-spacing:.02em}
