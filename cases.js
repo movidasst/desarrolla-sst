@@ -1,6 +1,6 @@
 (()=>{"use strict";
 const U="https://lfdmbkzghnwvsapxypvt.supabase.co",K="sb_publishable_bRnkA6PA8-v073nrw9zxiQ_8rVGiOn1",$=id=>document.getElementById(id),client=supabase.createClient(U,K);
-const names={negotiation:"Negociación",communication:"Comunicación asertiva",leadership:"Liderazgo preventivo",influence:"Influencia estratégica",critical:"Pensamiento crítico",emotional:"Gestión emocional"};
+const names={negotiation:"Negociación",communication:"Comunicación asertiva",leadership:"Liderazgo preventivo",influence:"Influencia estratégica",critical:"Pensamiento crítico",emotional:"Gestión emocional",finance:"Finanzas y Valor Preventivo"};
 let rows=[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const date=v=>v?new Intl.DateTimeFormat("es-CL",{dateStyle:"medium",timeStyle:"short"}).format(new Date(v)):"—";
