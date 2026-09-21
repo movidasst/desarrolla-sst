@@ -292,7 +292,11 @@
     button.disabled = true;
     button.textContent = 'Validando…';
     try {
-      openCertificate(await issue(route), route);
+      const data = await issue(route);
+      if (data?.diagnostico !== route.code) {
+        throw new Error('El certificado recibido no corresponde a esta competencia. Actualiza la página e intenta nuevamente.');
+      }
+      openCertificate(data, route);
     } catch (error) {
       notice(error.message);
     } finally {
@@ -404,18 +408,23 @@
   }
 
   function mountButtons() {
-    const cards = document.querySelectorAll('#globalProgress .competency-progress article');
-    cards.forEach((card, index) => {
-      const route = ROUTES[index];
-      const serverRoute = route ? serverEligible.get(route.code) : null;
+    const cards = document.querySelectorAll('#globalProgress .competency-progress article[data-competency]');
+    cards.forEach(card => {
+      const code = card.dataset.competency;
+      const route = ROUTES.find(item => item.code === code);
+      const serverRoute = code ? serverEligible.get(code) : null;
       const existingButton = card.querySelector('.certificate-button, .payment-button');
       if (!route || !serverRoute) { existingButton?.remove(); return; }
       const buttonState = serverRoute.pago_estado === 'validado' ? 'certificate' : `payment-${serverRoute.pago_estado || 'sin_reportar'}`;
-      if (existingButton?.dataset.state === buttonState) return;
+      if (
+        existingButton?.dataset.state === buttonState &&
+        existingButton?.dataset.competency === code
+      ) return;
       existingButton?.remove();
       const button = document.createElement('button');
       button.type = 'button';
       button.dataset.state = buttonState;
+      button.dataset.competency = code;
       if (serverRoute.pago_estado === 'validado') {
         button.className = 'certificate-button';
         button.innerHTML = '<span>▣</span> Descargar certificado';
