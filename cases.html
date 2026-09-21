@@ -1,0 +1,29 @@
+<!doctype html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Casos Role Play | Desarrolla SST</title><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css?v=20260920-v2"><link rel="stylesheet" href="admin-v2.css?v=20260920-1"><link rel="stylesheet" href="cases.css?v=20260920-1"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script></head><body class="admin-body">
+<div id="casesLoading" class="cases-loading"><div><b>Administrador de casos</b><span>Validando acceso…</span></div></div>
+<div id="casesApp" hidden><header><a class="brand" href="admin.html"><img src="https://www.movidasst.com/logo-oficial-movida-sst-plus.png" alt=""><span><b>Desarrolla</b> SST · Casos</span></a><div class="user"><b id="casesAdmin">Administrador</b><a class="admin-detail" href="admin.html">← Panel</a></div></header>
+<main class="admin-main cases-main">
+<div class="page-title admin-title"><p class="kicker teal">Biblioteca administrable</p><h1>Casos de Role Play</h1><p>Crea y modifica escenarios sin tocar código. Los cambios activos aparecen en la práctica de la competencia.</p></div>
+<section class="admin-kpis" id="caseKpis"></section>
+<section class="cases-layout">
+<aside class="admin-panel cases-form-panel"><div class="admin-panel-head"><div><h2 id="formTitle">Nuevo caso</h2><p>Define el escenario, sus límites y cómo se practica.</p></div><button id="caseReset" class="secondary">Nuevo</button></div>
+<form id="caseForm" class="case-form">
+<input id="caseId" type="hidden">
+<div class="case-grid two"><label>Competencia<select id="caseCompetency" required><option value="negotiation">Negociación</option><option value="communication">Comunicación asertiva</option><option value="leadership">Liderazgo preventivo</option><option value="influence">Influencia estratégica</option><option value="critical">Pensamiento crítico</option><option value="emotional">Gestión emocional</option></select></label><label>Icono<input id="caseIcon" maxlength="8" value="🎭"></label></div>
+<label>Interlocutor / actor<input id="caseActor" maxlength="100" required placeholder="Ej.: Supervisor de producción"></label>
+<label>Título del caso<input id="caseName" maxlength="180" required placeholder="Ej.: Permiso de trabajo bajo presión"></label>
+<label>Contexto<textarea id="caseContext" rows="4" maxlength="1800" required></textarea></label>
+<label>Frase inicial de la contraparte<textarea id="caseOpening" rows="3" maxlength="900" required></textarea></label>
+<label>Propósito de aprendizaje<textarea id="caseGoal" rows="2" maxlength="900"></textarea></label>
+<label>Límite preventivo<textarea id="caseLimit" rows="2" maxlength="900"></textarea></label>
+<label>Reglas críticas específicas<textarea id="caseCritical" rows="3" maxlength="1200" placeholder="Ej.: Nunca autorizar ingreso sin bloqueo verificado."></textarea></label>
+<div class="case-grid three"><label>Dificultad<select id="caseDifficulty"><option value="1">1 · Básica</option><option value="2" selected>2 · Inicial</option><option value="3">3 · Intermedia</option><option value="4">4 · Alta</option><option value="5">5 · Experta</option></select></label><label>Orden<input id="caseOrder" type="number" value="100" min="0" max="9999"></label><label class="check"><input id="caseActive" type="checkbox" checked><span>Activo</span></label></div>
+<label class="check wide"><input id="caseAiOnly" type="checkbox"><span>Solo respuesta libre con IA</span></label>
+<details id="guidedBlock" open><summary>Opciones guiadas · opcional</summary><p>Si dejas las tres vacías, el caso se guardará automáticamente como “solo IA”.</p><div id="guidedRows"></div></details>
+<p id="caseMessage" class="message"></p>
+<div class="case-actions"><button id="caseSave" class="primary" type="submit">Guardar caso</button><button id="caseDelete" class="danger" type="button" hidden>Eliminar</button></div>
+</form></aside>
+<section class="admin-panel cases-list-panel"><div class="admin-panel-head"><div><h2>Biblioteca</h2><p id="caseCount"></p></div></div>
+<div class="admin-tools cases-tools"><input id="caseSearch" placeholder="Buscar actor, título o contexto"><select id="caseFilterComp"><option value="">Todas las competencias</option><option value="negotiation">Negociación</option><option value="communication">Comunicación</option><option value="leadership">Liderazgo</option><option value="influence">Influencia</option><option value="critical">Pensamiento crítico</option><option value="emotional">Gestión emocional</option></select><select id="caseFilterState"><option value="">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option><option value="builtin">Base</option><option value="custom">Creados por administración</option></select></div>
+<div id="caseCards" class="case-cards"></div></section>
+</section></main></div>
+<script src="cases.js?v=20260920-1"></script></body></html>

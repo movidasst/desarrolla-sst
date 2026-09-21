@@ -136,18 +136,28 @@ Deno.serve(async(req:Request)=>{
  if(req.method!=="POST")return json(req,{ok:false,error:"method_not_allowed"},405);
  try{
   const body=await req.json().catch(()=>({}));
-  const token=clean(body?.token,80),competencyId=clean(body?.competency,40),answer=clean(body?.respuesta,2500),comp=COMPETENCIES[competencyId];
+  const token=clean(body?.token,80),caseId=clean(body?.case_id,80),competencyId=clean(body?.competency,40),answer=clean(body?.respuesta,2500),comp=COMPETENCIES[competencyId];
   const turn=clamp(body?.turn,1,6);
   if(!/^[0-9a-f-]{36}$/i.test(token))return json(req,{ok:false,error:"invalid_session",message:"La sesión no es válida. Ingresa nuevamente."},401);
   if(!rate(token))return json(req,{ok:false,error:"rate_limit",message:"Has enviado muchas respuestas seguidas. Intenta nuevamente en un momento."},429);
   if(!comp)return json(req,{ok:false,error:"invalid_competency",message:"La competencia no es válida."},400);
   if(answer.length<12)return json(req,{ok:false,error:"short_answer",message:"Desarrolla un poco más tu respuesta para poder evaluarla."},400);
-  const scenario={actor:clean(body?.scenario?.actor,100),caseName:clean(body?.scenario?.caseName,180),context:clean(body?.scenario?.context,1400),opening:clean(body?.scenario?.opening,700),goal:clean(body?.scenario?.goal,700),limit:clean(body?.scenario?.limit,700)};
-  if(!scenario.actor||!scenario.caseName||!scenario.context||!scenario.opening)return json(req,{ok:false,error:"invalid_scenario",message:"El caso no contiene información suficiente."},400);
   const anon=keyFromEnv();if(!anon)throw new Error("No se encontró la clave pública de Supabase.");
   const sb=createClient(Deno.env.get("SUPABASE_URL")!,anon,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data:session,error:sErr}=await sb.rpc("participa_bootstrap",{p_token:token});
   if(sErr||!session?.ok||!session?.perfil?.integrante_id)return json(req,{ok:false,error:"expired_session",message:"Tu sesión venció. Ingresa nuevamente."},401);
+  let scenario={actor:clean(body?.scenario?.actor,100),caseName:clean(body?.scenario?.caseName,180),context:clean(body?.scenario?.context,1400),opening:clean(body?.scenario?.opening,700),goal:clean(body?.scenario?.goal,700),limit:clean(body?.scenario?.limit,700)};
+  let caseCritical="";
+  if(caseId){
+    if(!/^[0-9a-f-]{36}$/i.test(caseId))return json(req,{ok:false,error:"invalid_case",message:"El caso no es válido."},400);
+    const {data:catalogCase,error:caseErr}=await sb.rpc("desarrolla_roleplay_case_get",{p_token:token,p_case_id:caseId});
+    if(caseErr||!catalogCase?.ok||!catalogCase?.case)return json(req,{ok:false,error:"case_unavailable",message:"El caso ya no está disponible."},409);
+    const cc=catalogCase.case;
+    if(String(cc.competency)!==competencyId)return json(req,{ok:false,error:"case_competency_mismatch",message:"El caso no pertenece a esta competencia."},400);
+    scenario={actor:clean(cc.actor_name,100),caseName:clean(cc.case_name,180),context:clean(cc.context,1400),opening:clean(cc.opening,700),goal:clean(cc.goal,700),limit:clean(cc.limit_text,700)};
+    caseCritical=clean(cc.critical_rules,1200);
+  }
+  if(!scenario.actor||!scenario.caseName||!scenario.context||!scenario.opening)return json(req,{ok:false,error:"invalid_scenario",message:"El caso no contiene información suficiente."},400);
   const history=(Array.isArray(body?.historial)?body.historial:[]).slice(-5).map((x:any)=>({usuario:clean(x?.usuario,900),contraparte:clean(x?.contraparte,900),score:clamp(x?.score,0,100),status:clean(x?.status,40),critical:Boolean(x?.critical)}));
   const rubric=comp.criteria.map(c=>`- ${c.key} 0-${c.max} (${c.label}): ${c.description}`).join("\n");
   const scoreShape=comp.criteria.map(c=>`"${c.key}":0`).join(",");
@@ -173,7 +183,7 @@ RÚBRICA FIJA (100 puntos):
 ${rubric}
 
 RIESGO CRÍTICO:
-${comp.critical}
+${comp.critical}${caseCritical?"\nReglas específicas de este caso:\n"+caseCritical:""}
 Si existe un riesgo crítico, "riesgo_critico" debe ser true y el resultado final será limitado por el servidor a 49/100.
 
 Además debes decidir el ESTADO DE LA CONVERSACIÓN. La simulación es adaptativa: puede durar entre 3 y 6 intervenciones.
@@ -207,6 +217,6 @@ Devuelve SOLO JSON:
   for(const mid of cs){last=await generate(apiKey,mid,prompt);if(last.ok)break;if(!RETRYABLE.has(last.status))break}
   if(!last?.ok){console.error("Gemini failure",last?.model,last?.status,last?.data?.error?.message||last?.data);const safeStatus=Number(last?.status)>=400&&Number(last?.status)<=599?Number(last.status):503;return json(req,{ok:false,error:"gemini_error",message:"La evaluación con IA no está disponible temporalmente.",status:safeStatus},safeStatus)}
   const result=validate(comp,parseJson(textOf(last.data)),turn,history);if(!result.reaccion)result.reaccion="Necesito que concretemos qué haría ahora y cómo verificaremos que la situación queda controlada.";
-  return json(req,{ok:true,provider:"Google Gemini",model:last.model,competency:competencyId,competencyTitle:comp.title,actor:scenario.actor,case:scenario.caseName,turn,evaluation:result},200);
+  return json(req,{ok:true,provider:"Google Gemini",model:last.model,case_id:caseId||null,competency:competencyId,competencyTitle:comp.title,actor:scenario.actor,case:scenario.caseName,turn,evaluation:result},200);
  }catch(e){console.error("desarrolla-roleplay-ai",e);return json(req,{ok:false,error:"server_error",message:"No se pudo evaluar la respuesta en este momento."},500)}
 });
