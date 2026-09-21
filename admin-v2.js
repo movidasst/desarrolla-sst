@@ -1,5 +1,5 @@
 (()=>{"use strict";
-const U="https://lfdmbkzghnwvsapxypvt.supabase.co",K="sb_publishable_bRnkA6PA8-v073nrw9zxiQ_8rVGiOn1",$=id=>document.getElementById(id),client=supabase.createClient(U,K),names={negociacion:"Negociación",comunicacion_asertiva:"Comunicación asertiva",liderazgo_preventivo:"Liderazgo preventivo",influencia_estrategica:"Influencia estratégica",pensamiento_critico:"Pensamiento crítico",gestion_emocional:"Gestión emocional"};let data=[];
+const U="https://lfdmbkzghnwvsapxypvt.supabase.co",K="sb_publishable_bRnkA6PA8-v073nrw9zxiQ_8rVGiOn1",$=id=>document.getElementById(id),client=supabase.createClient(U,K),names={negociacion:"Negociación",comunicacion_asertiva:"Comunicación asertiva",liderazgo_preventivo:"Liderazgo preventivo",influencia_estrategica:"Influencia estratégica",pensamiento_critico:"Pensamiento crítico",gestion_emocional:"Gestión emocional",finanzas_sst:"Finanzas y Valor Preventivo en SST"};let data=[];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const date=v=>v?new Intl.DateTimeFormat("es-CL",{dateStyle:"medium",timeStyle:"short"}).format(new Date(v)):"—";
 function loginView(message=""){$("adminApp").hidden=true;$("adminLogin").hidden=false;$("adminError").textContent=message}

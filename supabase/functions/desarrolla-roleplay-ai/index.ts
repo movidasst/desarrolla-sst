@@ -69,6 +69,20 @@ const COMPETENCIES:Record<string,Competency>={
   ],
   critical:"Fabricar o alterar evidencia; descartar conscientemente evidencia contradictoria relevante; presentar certeza inexistente para justificar una decisión; autorizar una condición insegura sin sustento; ocultar una limitación material del análisis."
  },
+ finance:{
+  title:"Finanzas y Valor Preventivo en SST",
+  criteria:[
+   {key:"comprension_financiera",label:"Comprensión financiera",max:10,axis:"evidence",description:"Usa correctamente conceptos económicos básicos y reconoce sus límites de interpretación."},
+   {key:"capex_opex",label:"CAPEX, OPEX y presupuesto",max:10,axis:"evidence",description:"Clasifica inversión, gasto operativo, partidas y costos recurrentes sin simplificaciones engañosas."},
+   {key:"costos_beneficios",label:"Costos y beneficios",max:15,axis:"evidence",description:"Cuantifica costos, beneficios y costos evitados con trazabilidad y sin doble contabilización."},
+   {key:"supuestos",label:"Supuestos e incertidumbre",max:15,axis:"traceability",description:"Distingue datos, supuestos y estimaciones; usa rangos o escenarios cuando corresponde."},
+   {key:"evaluacion_economica",label:"Evaluación económica",max:15,axis:"evidence",description:"Interpreta ROI, payback, TCO y métricas financieras pertinentes con sus limitaciones."},
+   {key:"alternativas",label:"Comparación de alternativas",max:15,axis:"control",description:"Compara eficacia, costo total, factibilidad, impacto operativo y riesgo residual antes de recomendar."},
+   {key:"recomendacion",label:"Recomendación ejecutiva",max:10,axis:"trust",description:"Formula una decisión clara, comprensible y accionable para Finanzas, Operaciones o Dirección."},
+   {key:"integridad",label:"Integridad preventiva y ética",max:10,axis:"control",description:"Mantiene obligaciones y límites preventivos; no subordina un control necesario a la rentabilidad."}
+  ],
+  critical:"Inventar o manipular cifras, probabilidades, costos o beneficios para conseguir aprobación; ocultar costos o limitaciones materiales; doble contabilizar ahorros; presentar costos evitados hipotéticos como ahorro garantizado; afirmar que una obligación o control necesario puede descartarse solo por ROI negativo; inflar deliberadamente la probabilidad o consecuencia de un accidente para justificar presupuesto."
+ },
  emotional:{
   title:"Gestión emocional y conversaciones difíciles en SST",
   criteria:[

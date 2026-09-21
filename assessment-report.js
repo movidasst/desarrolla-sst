@@ -5,10 +5,11 @@ const COMPETENCIES=[
  {key:"desarrolla-liderazgo-v1",plan:"desarrolla-lead-plan-v1",name:"Liderazgo preventivo en SST",short:"Liderazgo preventivo"},
  {key:"desarrolla-influencia-v1",plan:"desarrolla-inf-plan-v1",name:"Influencia estratégica en SST",short:"Influencia estratégica"},
  {key:"desarrolla-pensamiento-v1",plan:"desarrolla-crit-plan-v1",name:"Pensamiento crítico y toma de decisiones en SST",short:"Pensamiento crítico"},
- {key:"desarrolla-emocional-v1",plan:"desarrolla-emo-plan-v1",name:"Gestión emocional y conversaciones difíciles en SST",short:"Gestión emocional"}
+ {key:"desarrolla-emocional-v1",plan:"desarrolla-emo-plan-v1",name:"Gestión emocional y conversaciones difíciles en SST",short:"Gestión emocional"},
+ {key:"desarrolla-finanzas-v1",plan:"desarrolla-fin-plan-v1",name:"Finanzas y Valor Preventivo en SST",short:"Finanzas SST"}
 ];
 const style=document.createElement("style");style.textContent='.report-button{display:inline-flex;align-items:center;justify-content:center;gap:.4rem}.report-button.compact{border:1px solid #007b85;background:#fff;color:#006b74;border-radius:10px;padding:.55rem .75rem;font:700 .78rem Outfit,sans-serif;white-space:nowrap;cursor:pointer}.report-button.compact:hover{background:#eaf7f8}@media(max-width:720px){.result-actions .report-button{width:100%}.cp-title{flex-wrap:wrap}.report-button.compact{order:4;width:100%;margin-top:.35rem;min-height:42px}.competency-progress article{overflow:visible}}';document.head.appendChild(style);
-const C={navy:[0,32,91],teal:[0,123,133],green:[112,173,71],amber:[255,182,0],slate:[71,85,105],light:[241,245,249],white:[255,255,255]},roots=["result","commResult","leadResult","influenceResult","criticalResult","emotionResult"];
+const C={navy:[0,32,91],teal:[0,123,133],green:[112,173,71],amber:[255,182,0],slate:[71,85,105],light:[241,245,249],white:[255,255,255]},roots=["result","commResult","leadResult","influenceResult","criticalResult","emotionResult","financeResult"];
 function read(key){try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null}}
 function level(n){return n<45?"Inicial":n<65?"En desarrollo":n<82?"Competente":"Estratégico"}
 function person(){try{return JSON.parse(sessionStorage.getItem("desarrolla-session")||"null")?.name||"Participante"}catch{return"Participante"}}

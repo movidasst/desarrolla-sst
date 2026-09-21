@@ -12,7 +12,8 @@
     { code: 'liderazgo_preventivo', name: 'Liderazgo preventivo', result: 'desarrolla-liderazgo-v1', keys: ['desarrolla-lead-learn-v1', 'desarrolla-lead-role-v1', 'desarrolla-lead-plan-v1', 'desarrolla-lead-final-v2'], badge: 'liderazgo-preventivo.svg' },
     { code: 'influencia_estrategica', name: 'Influencia estratégica', result: 'desarrolla-influencia-v1', keys: ['desarrolla-inf-learn-v1', 'desarrolla-inf-role-v1', 'desarrolla-inf-plan-v1', 'desarrolla-inf-final-v2'], badge: 'influencia-estrategica.svg' },
     { code: 'pensamiento_critico', name: 'Pensamiento crítico', result: 'desarrolla-pensamiento-v1', keys: ['desarrolla-crit-learn-v1', 'desarrolla-crit-role-v1', 'desarrolla-crit-plan-v1', 'desarrolla-crit-final-v2'], badge: 'pensamiento-critico.svg' },
-    { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1', 'desarrolla-emo-final-v2'], badge: 'gestion-emocional.svg' }
+    { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1', 'desarrolla-emo-final-v2'], badge: 'gestion-emocional.svg' },
+    { code: 'finanzas_sst', name: 'Finanzas y Valor Preventivo en SST', result: 'desarrolla-finanzas-v1', keys: ['desarrolla-fin-learn-v1', 'desarrolla-fin-role-v1', 'desarrolla-fin-plan-v1', 'desarrolla-fin-final-v2'], badge: null }
   ];
   const PROGRAMS = {
     negociacion: ['Conflicto, posiciones, intereses y necesidades', 'Preparación: actores, evidencia, límites y alternativas', 'Escucha activa y comunicación proporcional del riesgo', 'Negociación colaborativa y criterios objetivos', 'Conversaciones con trabajadores, sindicatos, dirección, autoridad y comunidad', 'Acuerdos verificables, responsables, plazos y seguimiento'],
@@ -20,7 +21,8 @@
     liderazgo_preventivo: ['Fundamentos del liderazgo preventivo', 'Propósito, ejemplo y coherencia profesional', 'Participación, confianza y seguridad psicológica', 'Movilización de equipos para controlar riesgos', 'Decisiones, responsabilidades y seguimiento', 'Desarrollo de cultura preventiva sostenible'],
     influencia_estrategica: ['Mapeo de actores, poder, interés e impacto', 'Construcción del caso preventivo', 'SST, continuidad operacional y sostenibilidad', 'Argumentación y adaptación del mensaje', 'Coaliciones, patrocinio y gobernanza', 'Seguimiento de compromisos estratégicos'],
     pensamiento_critico: ['Calidad de fuentes, evidencia y trazabilidad', 'Hechos, interpretaciones, supuestos y opiniones', 'Sesgos cognitivos aplicados a decisiones de SST', 'Causalidad, incertidumbre y explicaciones alternativas', 'Preguntas críticas y contraste de información', 'Decisiones proporcionales basadas en evidencia'],
-    gestion_emocional: ['Autoconocimiento y reconocimiento de detonantes', 'Regulación emocional bajo presión', 'Empatía sin renunciar al criterio preventivo', 'Manejo de tensión, desacuerdo y confrontación', 'Pausas, recuperación y respuesta consciente', 'Plan personal para conversaciones exigentes']
+    gestion_emocional: ['Autoconocimiento y reconocimiento de detonantes', 'Regulación emocional bajo presión', 'Empatía sin renunciar al criterio preventivo', 'Manejo de tensión, desacuerdo y confrontación', 'Pausas, recuperación y respuesta consciente', 'Plan personal para conversaciones exigentes'],
+    finanzas_sst: ['Lenguaje financiero básico, margen y flujo de caja', 'Presupuesto, partidas, forecast y desviaciones', 'CAPEX, OPEX y costo de implementación', 'Costo económico del riesgo, directos e indirectos', 'ROI, payback, TCO y lectura de VAN/TIR', 'Escenarios, sensibilidad, supuestos y business case ejecutivo']
   };
   const PAYMENT_INFO = {
     transfer: 'Banco de Venezuela · Cuenta corriente 0102-0236-1500-0033-6732 · Ezequiel Linares · C.I. 30.407.087',
@@ -83,7 +85,7 @@
           <header class="certificate-header">
             <img class="certificate-logo" src="${LOGO}" alt="La Movida de SST+">
             <div><p>LA ACADEMIA MOVIDA DE SST</p><span>De la Reacción a la Prevención</span></div>
-            <img class="certificate-badge" src="${BADGE_BASE}${route.badge}?v=20260920-sin-texto-v3" alt="Insignia ${esc(route.name)}">
+            <img class="certificate-badge" src="${route.badge?BADGE_BASE+route.badge+'?v=20260920-sin-texto-v3':LOGO}" alt="Insignia ${esc(route.name)}">
           </header>
           <main class="certificate-main">
             <p class="certificate-overline">CERTIFICADO DE CULMINACIÓN</p>
