@@ -17,8 +17,8 @@
 <label>Límite preventivo<textarea id="caseLimit" rows="2" maxlength="900"></textarea></label>
 <label>Reglas críticas específicas<textarea id="caseCritical" rows="3" maxlength="1200" placeholder="Ej.: Nunca autorizar ingreso sin bloqueo verificado."></textarea></label>
 <div class="case-grid three"><label>Dificultad<select id="caseDifficulty"><option value="1">1 · Básica</option><option value="2" selected>2 · Inicial</option><option value="3">3 · Intermedia</option><option value="4">4 · Alta</option><option value="5">5 · Experta</option></select></label><label>Orden<input id="caseOrder" type="number" value="100" min="0" max="9999"></label><label class="check"><input id="caseActive" type="checkbox" checked><span>Activo</span></label></div>
-<label class="check wide"><input id="caseAiOnly" type="checkbox"><span>Solo respuesta libre con IA</span></label>
-<details id="guidedBlock" open><summary>Opciones guiadas · opcional</summary><p>Si dejas las tres vacías, el caso se guardará automáticamente como “solo IA”.</p><div id="guidedRows"></div></details>
+
+<details id="guidedBlock" open><summary>Decisiones guiadas · obligatorias</summary><p>Todo caso activo debe tener tres decisiones: una sólida, una parcial y una de riesgo, cada una con su retroalimentación.</p><div id="guidedRows"></div></details>
 <p id="caseMessage" class="message"></p>
 <div class="case-actions"><button id="caseSave" class="primary" type="submit">Guardar caso</button><button id="caseDelete" class="danger" type="button" hidden>Eliminar</button></div>
 </form></aside>
@@ -26,4 +26,4 @@
 <div class="admin-tools cases-tools"><input id="caseSearch" placeholder="Buscar actor, título o contexto"><select id="caseFilterComp"><option value="">Todas las competencias</option><option value="negotiation">Negociación</option><option value="communication">Comunicación</option><option value="leadership">Liderazgo</option><option value="influence">Influencia</option><option value="critical">Pensamiento crítico</option><option value="emotional">Gestión emocional</option><option value="finance">Finanzas y Valor Preventivo</option></select><select id="caseFilterState"><option value="">Todos</option><option value="active">Activos</option><option value="inactive">Inactivos</option><option value="builtin">Base</option><option value="custom">Creados por administración</option></select></div>
 <div id="caseCards" class="case-cards"></div></section>
 </section></main></div>
-<script src="cases.js?v=20260920-finance-1"></script></body></html>
+<script src="cases.js?v=20260921-guided-v2"></script></body></html>

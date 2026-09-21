@@ -5,8 +5,8 @@ const TOKEN="desarrolla-ranking-token";
 const cache=new Map();
 function mapCase(c,shape){
  const choices=Array.isArray(c.guided_choices)?c.guided_choices:[];
- const meta={caseId:c.id,goal:c.goal||"",limit:c.limit_text||"",aiOnly:Boolean(c.ai_only)||!choices.length,difficulty:Number(c.difficulty||2),criticalRules:c.critical_rules||"",source:c.source||"custom"};
- if(shape==="object")return{id:c.legacy_key||c.id,caseId:c.id,icon:c.icon||"🎭",name:c.actor_name,case:c.case_name,context:c.context,goal:c.goal||"",limit:c.limit_text||"",voice:c.opening,choices,aiOnly:meta.aiOnly,difficulty:meta.difficulty,criticalRules:meta.criticalRules,source:meta.source};
+ const meta={caseId:c.id,goal:c.goal||"",limit:c.limit_text||"",difficulty:Number(c.difficulty||2),criticalRules:c.critical_rules||"",source:c.source||"custom"};
+ if(shape==="object")return{id:c.legacy_key||c.id,caseId:c.id,icon:c.icon||"🎭",name:c.actor_name,case:c.case_name,context:c.context,goal:c.goal||"",limit:c.limit_text||"",voice:c.opening,choices,difficulty:meta.difficulty,criticalRules:meta.criticalRules,source:meta.source};
  return[c.legacy_key||c.id,c.icon||"🎭",c.actor_name,c.case_name,c.context,c.opening,choices,meta];
 }
 async function fetchCases(competency){
