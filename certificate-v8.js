@@ -13,7 +13,7 @@
     { code: 'influencia_estrategica', name: 'Influencia estratégica', result: 'desarrolla-influencia-v1', keys: ['desarrolla-inf-learn-v1', 'desarrolla-inf-role-v1', 'desarrolla-inf-plan-v1', 'desarrolla-inf-final-v2'], badge: 'influencia-estrategica.svg' },
     { code: 'pensamiento_critico', name: 'Pensamiento crítico', result: 'desarrolla-pensamiento-v1', keys: ['desarrolla-crit-learn-v1', 'desarrolla-crit-role-v1', 'desarrolla-crit-plan-v1', 'desarrolla-crit-final-v2'], badge: 'pensamiento-critico.svg' },
     { code: 'gestion_emocional', name: 'Gestión emocional', result: 'desarrolla-emocional-v1', keys: ['desarrolla-emo-learn-v1', 'desarrolla-emo-role-v1', 'desarrolla-emo-plan-v1', 'desarrolla-emo-final-v2'], badge: 'gestion-emocional.svg' },
-    { code: 'finanzas_sst', name: 'Finanzas y Valor Preventivo en SST', result: 'desarrolla-finanzas-v1', keys: ['desarrolla-fin-learn-v1', 'desarrolla-fin-role-v1', 'desarrolla-fin-plan-v1', 'desarrolla-fin-final-v2'], badge: 'finanzas-valor-preventivo.svg' }
+    { code: 'finanzas_sst', name: 'Finanzas y Valor Preventivo en SST', result: 'desarrolla-finanzas-v1', keys: ['desarrolla-fin-learn-v1', 'desarrolla-fin-role-v1', 'desarrolla-fin-plan-v1', 'desarrolla-fin-final-v2'], badge: null }
   ];
   const PROGRAMS = {
     negociacion: ['Conflicto, posiciones, intereses y necesidades', 'Preparación: actores, evidencia, límites y alternativas', 'Escucha activa y comunicación proporcional del riesgo', 'Negociación colaborativa y criterios objetivos', 'Conversaciones con trabajadores, sindicatos, dirección, autoridad y comunidad', 'Acuerdos verificables, responsables, plazos y seguimiento'],
@@ -85,7 +85,7 @@
           <header class="certificate-header">
             <img class="certificate-logo" src="${LOGO}" alt="La Movida de SST+">
             <div><p>LA ACADEMIA MOVIDA DE SST</p><span>De la Reacción a la Prevención</span></div>
-            <img class="certificate-badge" src="${BADGE_BASE}${route.badge}?v=20260920-sin-texto-v3" alt="Insignia ${esc(route.name)}">
+            <img class="certificate-badge" src="${route.badge?BADGE_BASE+route.badge+'?v=20260920-sin-texto-v3':LOGO}" alt="Insignia ${esc(route.name)}">
           </header>
           <main class="certificate-main">
             <p class="certificate-overline">CERTIFICADO DE CULMINACIÓN</p>
