@@ -71,3 +71,56 @@ on conflict (competency,legacy_key) where legacy_key is not null do update set
  icon=excluded.icon,actor_name=excluded.actor_name,case_name=excluded.case_name,context=excluded.context,opening=excluded.opening,
  goal=excluded.goal,limit_text=excluded.limit_text,difficulty=excluded.difficulty,guided_choices=excluded.guided_choices,
  ai_only=excluded.ai_only,active=excluded.active,sort_order=excluded.sort_order,updated_at=now();
+
+
+-- Perfil/Directorio: siete competencias reales y evaluación como cuarta etapa.
+alter table public.desarrolla_progreso drop constraint if exists desarrolla_progreso_etapa_check;
+alter table public.desarrolla_progreso add constraint desarrolla_progreso_etapa_check
+check (etapa in ('guia','practica','plan','evaluacion'));
+
+create or replace function private.desarrolla_insignias_integrante(p_integrante_id bigint)
+returns jsonb language sql stable set search_path=''
+as $$
+ with reales as(
+  select r.diagnostico,
+         greatest(r.ultima_completada_at,(select max(p.actualizada_at)
+          from public.desarrolla_progreso p
+          where p.integrante_id=r.integrante_id and p.diagnostico=r.diagnostico)) obtenida_at
+  from public.desarrolla_resultados r
+  where r.integrante_id=p_integrante_id
+    and private.desarrolla_ruta_cumple(r.integrante_id,r.diagnostico)
+ ),combinadas as(
+  select diagnostico,obtenida_at,false prueba from reales
+  union all
+  select o.diagnostico,o.otorgada_at,coalesce(o.modo_prueba,false)
+  from private.desarrolla_insignias_override o
+  where o.integrante_id=p_integrante_id and o.activa
+    and not exists(select 1 from reales r where r.diagnostico=o.diagnostico)
+ )
+ select coalesce(jsonb_agg(jsonb_build_object(
+   'codigo',diagnostico,'obtenida_at',obtenida_at,'prueba',prueba)
+   order by case diagnostico
+    when 'negociacion' then 1 when 'comunicacion_asertiva' then 2
+    when 'liderazgo_preventivo' then 3 when 'influencia_estrategica' then 4
+    when 'pensamiento_critico' then 5 when 'gestion_emocional' then 6
+    when 'finanzas_sst' then 7 else 99 end),'[]'::jsonb)
+ from combinadas;
+$$;
+
+create or replace function private.desarrolla_certificados_integrante(p_integrante_id bigint)
+returns jsonb language sql stable security definer set search_path=''
+as $$
+ select coalesce(jsonb_agg(jsonb_build_object(
+  'codigo_competencia',c.diagnostico,'codigo_certificado',c.codigo,
+  'completada_at',c.completada_at,'emitida_at',c.emitida_at,
+  'vigente',c.anulada_at is null)
+  order by case c.diagnostico
+   when 'negociacion' then 1 when 'comunicacion_asertiva' then 2
+   when 'liderazgo_preventivo' then 3 when 'influencia_estrategica' then 4
+   when 'pensamiento_critico' then 5 when 'gestion_emocional' then 6
+   when 'finanzas_sst' then 7 else 99 end),'[]'::jsonb)
+ from private.desarrolla_certificados c
+ join private.desarrolla_pagos_certificado p
+   on p.integrante_id=c.integrante_id and p.diagnostico=c.diagnostico and p.estado='validado'
+ where c.integrante_id=p_integrante_id;
+$$;
