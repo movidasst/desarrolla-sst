@@ -95,14 +95,14 @@ begin
  if v_comp not in ('negotiation','communication','leadership','influence','critical','emotional','finance') then raise exception 'Competencia no válida'; end if;
  if nullif(trim(p_payload->>'actor_name'),'') is null or nullif(trim(p_payload->>'case_name'),'') is null or nullif(trim(p_payload->>'context'),'') is null or nullif(trim(p_payload->>'opening'),'') is null then raise exception 'Faltan campos obligatorios'; end if;
  v_choices:=coalesce(p_payload->'guided_choices','[]'::jsonb);
- if jsonb_typeof(v_choices)<>'array' or jsonb_array_length(v_choices)>6 then raise exception 'Opciones guiadas inválidas'; end if;
+ if jsonb_typeof(v_choices)<>'array' or jsonb_array_length(v_choices)<3 or jsonb_array_length(v_choices)>6 then raise exception 'Se requieren entre 3 y 6 decisiones guiadas'; end if;
  if v_id is null then
   insert into private.desarrolla_roleplay_cases(competency,icon,actor_name,case_name,context,opening,goal,limit_text,difficulty,critical_rules,guided_choices,ai_only,active,sort_order,source,created_by)
   values(v_comp,left(coalesce(nullif(p_payload->>'icon',''),'🎭'),8),left(trim(p_payload->>'actor_name'),100),left(trim(p_payload->>'case_name'),180),
    left(trim(p_payload->>'context'),1800),left(trim(p_payload->>'opening'),900),left(trim(coalesce(p_payload->>'goal','')),900),
    left(trim(coalesce(p_payload->>'limit_text','')),900),greatest(1,least(coalesce((p_payload->>'difficulty')::int,2),5)),
    left(trim(coalesce(p_payload->>'critical_rules','')),1200),v_choices,
-   coalesce((p_payload->>'ai_only')::boolean,false) or jsonb_array_length(v_choices)=0,
+   false,
    coalesce((p_payload->>'active')::boolean,true),coalesce((p_payload->>'sort_order')::int,100),'custom',auth.uid())
   returning id into v_id;
  else
@@ -110,7 +110,7 @@ begin
    actor_name=left(trim(p_payload->>'actor_name'),100),case_name=left(trim(p_payload->>'case_name'),180),context=left(trim(p_payload->>'context'),1800),
    opening=left(trim(p_payload->>'opening'),900),goal=left(trim(coalesce(p_payload->>'goal','')),900),limit_text=left(trim(coalesce(p_payload->>'limit_text','')),900),
    difficulty=greatest(1,least(coalesce((p_payload->>'difficulty')::int,difficulty),5)),critical_rules=left(trim(coalesce(p_payload->>'critical_rules','')),1200),
-   guided_choices=v_choices,ai_only=(coalesce((p_payload->>'ai_only')::boolean,ai_only) or jsonb_array_length(v_choices)=0),
+   guided_choices=v_choices,ai_only=false,
    active=coalesce((p_payload->>'active')::boolean,active),sort_order=coalesce((p_payload->>'sort_order')::int,sort_order),updated_at=now()
   where id=v_id;
   if not found then raise exception 'Caso no encontrado'; end if;
