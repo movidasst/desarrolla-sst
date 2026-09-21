@@ -47,3 +47,32 @@
 @media(prefers-reduced-motion:reduce){.gate-visual>img{animation:none}}
 
 .admin-link{display:flex;align-items:center;text-decoration:none;color:var(--muted);font-weight:700;padding:10px 13px;border-radius:9px}.admin-link:hover{background:#eef7f7;color:var(--teal)}.xp-award{display:inline-block;margin:18px 0 0!important;padding:10px 14px;border-radius:999px;background:#ffffff18;color:#ffe27a;font-weight:800}.admin-body{background:linear-gradient(150deg,#effafa,#f8fafc 55%,#fff6d8);min-height:100vh}.admin-login{min-height:100vh;display:grid;place-items:center;padding:25px}.admin-login-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:36px;box-shadow:var(--shadow)}.admin-logo{display:block;width:130px;height:130px;object-fit:contain;margin:0 auto 25px;border-radius:50%;box-shadow:0 10px 35px #00205b24}.back-admin{display:block;text-align:center;margin-top:20px;color:var(--teal);font-weight:700}.admin-main{padding-bottom:80px}.admin-title{padding-bottom:15px}.admin-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:15px clamp(24px,7vw,105px) 30px}.admin-kpis article{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;display:grid;gap:8px}.admin-kpis span{color:var(--muted);font-size:.88rem}.admin-kpis b{color:var(--navy);font-size:2rem}.admin-panel{margin:0 clamp(24px,7vw,105px);background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden}.admin-panel-head{padding:22px;display:flex;justify-content:space-between;gap:20px;align-items:center}.admin-panel-head h2{color:var(--navy);margin:0}.admin-panel-head p{color:var(--muted);margin:4px 0 0}.admin-panel-head input{width:min(100%,360px);border:1px solid var(--line);border-radius:11px;padding:12px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:820px}th,td{text-align:left;padding:14px 18px;border-top:1px solid var(--line)}th{background:#f8fafc;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}td b,td small{display:block}td small{color:var(--muted);margin-top:3px}.xp-cell{color:#4e842e;font-weight:800}.no-results{text-align:center;color:var(--muted);padding:40px}@media(max-width:900px){.admin-kpis{grid-template-columns:repeat(2,1fr)}.admin-panel-head{align-items:stretch;flex-direction:column}.admin-panel-head input{width:100%}}@media(max-width:520px){.admin-kpis{grid-template-columns:1fr 1fr}.admin-kpis article{padding:17px}.admin-kpis b{font-size:1.5rem}}
+
+/* Puerta de entrada Desarrolla SST · explicación + registro */
+.gate-story h1 span{color:#ffd35c}.gate-story>p:not(.kicker){max-width:760px}
+.gate-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:28px;max-width:760px}
+.gate-benefits article{padding:15px 16px;border:1px solid #ffffff32;border-radius:15px;background:#ffffff0d;backdrop-filter:blur(5px)}
+.gate-benefits b{display:block;color:#ffd35c;font-size:.92rem;margin-bottom:4px}.gate-benefits span{display:block;color:#e3f3f5;font-size:.88rem;line-height:1.4}
+.login-wrap{background:linear-gradient(180deg,#fff 0%,#f8fbfc 100%)}
+.login-shell{width:min(100%,520px)}.login{width:100%}
+.login-brandline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.login-brandline span{font-size:.77rem;font-weight:900;letter-spacing:.13em;color:var(--teal)}.login-brandline small{font-weight:800;color:var(--navy);background:#edf7f7;padding:6px 9px;border-radius:999px}
+.login h2{font-size:clamp(2rem,3vw,2.55rem);line-height:1.04;margin-bottom:14px}
+.login-lead{font-size:1rem;line-height:1.58!important;color:#526274!important;margin-bottom:14px}.login-lead b{color:var(--navy)}
+.login-mini-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px;margin:14px 0 20px}.login-mini-benefits span{font-size:.82rem;font-weight:700;color:#45616a}
+.login-divider{position:relative;text-align:center;margin:22px 0 16px}.login-divider:before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line)}.login-divider span{position:relative;background:#fff;padding:0 10px;color:var(--navy);font-weight:800;font-size:.82rem}
+.access-help{margin:0!important;padding:11px 13px;border-radius:11px;background:#f1f7f8;color:#526274!important;font-size:.88rem!important;line-height:1.45!important}
+.register-card{margin-top:24px!important;padding:18px!important;border:1px solid #cfe4e6!important;border-radius:16px!important;background:linear-gradient(135deg,#f0fbfb,#fff8df)!important;display:grid!important;gap:12px!important}
+.register-card div{display:grid;gap:3px}.register-card .register-kicker{color:var(--teal);font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.register-card b{color:var(--navy);font-size:1.04rem}.register-card p{margin:3px 0 0;color:var(--muted);font-size:.86rem;line-height:1.45}
+.register-button{display:block!important;margin:0!important;padding:12px 14px;border-radius:11px;background:var(--teal);color:#fff!important;text-decoration:none;text-align:center;font-weight:900!important;box-shadow:0 7px 18px #007b852b}
+.register-button:hover{background:#006b74}
+@media(max-width:900px){
+ .login-wrap{min-height:100vh;padding:22px 20px 36px;align-items:start}
+ .mobile-logo{margin:4px 0 22px;width:122px}
+ .login-brandline{margin-bottom:10px}
+ .login h2{font-size:2rem}
+ .login-mini-benefits{grid-template-columns:1fr 1fr}
+}
+@media(max-width:480px){
+ .login-mini-benefits{grid-template-columns:1fr}
+ .register-card{padding:15px!important}
+}
