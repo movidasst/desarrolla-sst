@@ -4,7 +4,7 @@
 create table if not exists private.desarrolla_roleplay_cases (
  id uuid primary key default extensions.gen_random_uuid(),
  legacy_key text,
- competency text not null check (competency in ('negotiation','communication','leadership','influence','critical','emotional')),
+ competency text not null check (competency in ('negotiation','communication','leadership','influence','critical','emotional','finance')),
  icon text not null default '🎭',
  actor_name text not null,
  case_name text not null,
@@ -36,7 +36,7 @@ declare v_s record;
 begin
  select * into v_s from private.participa_sesion_actual(p_token);
  if v_s.integrante_id is null then return jsonb_build_object('ok',false,'message','Tu sesión venció. Ingresa nuevamente.'); end if;
- if p_competency not in ('negotiation','communication','leadership','influence','critical','emotional') then return jsonb_build_object('ok',false,'message','Competencia no válida.'); end if;
+ if p_competency not in ('negotiation','communication','leadership','influence','critical','emotional','finance') then return jsonb_build_object('ok',false,'message','Competencia no válida.'); end if;
  return jsonb_build_object('ok',true,'cases',coalesce((
   select jsonb_agg(jsonb_build_object(
    'id',c.id,'legacy_key',c.legacy_key,'competency',c.competency,'icon',c.icon,'actor_name',c.actor_name,'case_name',c.case_name,
@@ -92,7 +92,7 @@ begin
  if not public.is_app_admin() then raise exception 'Acceso no autorizado'; end if;
  v_id:=nullif(p_payload->>'id','')::uuid;
  v_comp:=trim(coalesce(p_payload->>'competency',''));
- if v_comp not in ('negotiation','communication','leadership','influence','critical','emotional') then raise exception 'Competencia no válida'; end if;
+ if v_comp not in ('negotiation','communication','leadership','influence','critical','emotional','finance') then raise exception 'Competencia no válida'; end if;
  if nullif(trim(p_payload->>'actor_name'),'') is null or nullif(trim(p_payload->>'case_name'),'') is null or nullif(trim(p_payload->>'context'),'') is null or nullif(trim(p_payload->>'opening'),'') is null then raise exception 'Faltan campos obligatorios'; end if;
  v_choices:=coalesce(p_payload->'guided_choices','[]'::jsonb);
  if jsonb_typeof(v_choices)<>'array' or jsonb_array_length(v_choices)>6 then raise exception 'Opciones guiadas inválidas'; end if;
