@@ -2,7 +2,7 @@
 let previous="";
 function improve(){
  const toast=document.getElementById("toast");if(toast){toast.setAttribute("role","status");toast.setAttribute("aria-live","polite")}
- document.querySelectorAll("button:not([type])").forEach(b=>b.type="button");
+ document.querySelectorAll("button:not([type])").forEach(b=>{if(!b.closest("form"))b.type="button"});
  document.querySelectorAll(".role-meter,.quiz-top i").forEach(p=>{p.setAttribute("role","progressbar");const bar=p.querySelector("i,b");if(bar){const n=parseFloat(bar.style.width)||0;p.setAttribute("aria-valuemin","0");p.setAttribute("aria-valuemax","100");p.setAttribute("aria-valuenow",String(Math.round(n)))}});
  document.querySelectorAll(".lesson-nav").forEach(n=>n.setAttribute("aria-label","Navegación entre estaciones"));
  document.querySelectorAll(".path-menu").forEach(n=>n.setAttribute("aria-label","Etapas de la ruta de competencia"));
