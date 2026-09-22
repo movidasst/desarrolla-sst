@@ -50,7 +50,7 @@
       "jspdf",
       [
         "https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"
+        "https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js"
       ],
       () => window.jspdf?.jsPDF || null
     ),
