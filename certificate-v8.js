@@ -134,7 +134,7 @@
     if (window.DesarrollaDeps?.loadJsPdf) return window.DesarrollaDeps.loadJsPdf();
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js';
       script.onload = () => resolve(window.jspdf.jsPDF);
       script.onerror = reject;
       document.head.appendChild(script);
