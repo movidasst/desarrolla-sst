@@ -45,3 +45,41 @@ button,a{touch-action:manipulation}.back,.lesson-nav button,.decisions button,.a
 @media(max-width:760px){.system-status{top:max(8px,env(safe-area-inset-top));font-size:.82rem;line-height:1.35}.skip-link{top:max(8px,env(safe-area-inset-top))}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 @media(forced-colors:active){button,a,input,textarea,select,.card,.route-card,.expert-dialog{forced-color-adjust:auto}.tag,.route-badge{border:1px solid currentColor}}
+
+
+/* Radar PREVER · pensamiento crítico e información */
+.radar-callout{border:1px solid rgba(0,123,133,.18);background:linear-gradient(180deg,#fff,#f3fbfb)}
+.radar-callout h3{margin:.8rem 0 .45rem;font-size:1.3rem;color:#00205b}
+.radar-intro{display:grid;gap:18px}
+.radar-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.radar-legend>div{display:grid;gap:5px;padding:14px;border:1px solid #dce7ee;border-radius:14px;background:#fff}
+.radar-legend b{color:#00205b}
+.radar-legend span{font-size:.9rem;line-height:1.35;color:#64748b}
+.radar-last{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0}
+.radar-last>b{font-size:1.35rem;color:#007b85}
+.route-head.compact{padding-bottom:18px}
+.radar-card{display:grid;gap:18px}
+.radar-source{display:flex;align-items:center;gap:12px}
+.radar-source>i{display:grid;place-items:center;width:52px;height:52px;border-radius:15px;background:#f8fafc;border:1px solid #dce7ee;font-style:normal;font-size:1.6rem}
+.radar-source>div{display:grid;gap:2px}
+.radar-source b{font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;color:#007b85}
+.radar-source span{font-weight:800;color:#00205b}
+.radar-message{margin:0;padding:18px 20px;border-left:5px solid #007b85;border-radius:0 15px 15px 0;background:#f8fafc;color:#1e293b;font-size:1.08rem;font-weight:650;line-height:1.55}
+.radar-context{margin:0;padding:13px 15px;border-radius:13px;background:#fff8e6;border:1px solid #f1d78a;color:#5f4b00}
+.radar-card h3{margin:2px 0 0;color:#00205b;font-size:1.12rem}
+.radar-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.radar-choices button{display:grid;gap:6px;text-align:left;min-height:96px;padding:15px;border-radius:15px;border:1px solid #d7e1e8;background:#fff;color:#00205b;cursor:pointer}
+.radar-choices button:hover{transform:translateY(-1px);border-color:#007b85;box-shadow:0 9px 22px rgba(0,32,91,.08)}
+.radar-choices button b{font-size:1rem}
+.radar-choices button small{font-size:.84rem;line-height:1.35;color:#64748b}
+.radar-result{display:grid;gap:18px;text-align:center}
+.radar-result .score{margin-inline:auto}
+.radar-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;text-align:left}
+.radar-summary>div{display:grid;gap:6px;padding:14px;border-radius:14px;background:#f8fafc;border:1px solid #dce7ee}
+.radar-summary b{color:#00205b}
+.radar-summary span{font-size:.9rem;line-height:1.4;color:#64748b}
+@media(max-width:760px){
+ .radar-legend,.radar-choices,.radar-summary{grid-template-columns:1fr}
+ .radar-message{font-size:1rem;padding:16px}
+ .radar-choices button{min-height:84px}
+}
