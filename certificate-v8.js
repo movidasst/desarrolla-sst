@@ -397,7 +397,9 @@
       if (data?.ok && Array.isArray(data.rutas)) {
         serverEligible.clear();
         data.rutas.forEach(route => serverEligible.set(route.codigo, route));
+        window.DesarrollaServerRoutes = Object.fromEntries(data.rutas.map(route => [route.codigo, route]));
         eligibilityLoadedFor = token;
+        document.dispatchEvent(new CustomEvent('desarrolla:server-progress', { detail: window.DesarrollaServerRoutes }));
       }
     } catch (error) {
       console.error('No se pudieron consultar las rutas certificables.', error);
