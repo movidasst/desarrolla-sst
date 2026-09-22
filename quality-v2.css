@@ -39,3 +39,9 @@ button,a{touch-action:manipulation}.back,.lesson-nav button,.decisions button,.a
  .site-footer{padding-bottom:26px}
 }
 @media(max-width:380px){#app>header{padding-inline:10px}.brand img{width:52px}.user button{padding-inline:11px}.route-shell{width:calc(100% - 18px)}.route-card{padding:17px}.expert-dialog{padding-inline:16px}.payment-actions{grid-template-columns:1fr}.payment-actions button{width:100%}}
+
+/* Accesibilidad, estado de conexión y recuperación */
+.skip-link{position:fixed;left:12px;top:10px;z-index:20000;transform:translateY(-150%);padding:11px 15px;border-radius:10px;background:#00205b;color:#fff;font-weight:800;text-decoration:none}.skip-link:focus{transform:none}.system-status{position:fixed;z-index:15000;left:50%;top:12px;transform:translateX(-50%);width:min(680px,calc(100% - 24px));padding:12px 16px;border-radius:13px;background:#eaf7f7;border:1px solid #8dc7ca;color:#005e66;text-align:center;font-weight:800;box-shadow:0 12px 30px rgba(0,32,91,.15)}.system-status[data-type="warning"]{background:#fff7db;border-color:#e7c85c;color:#6b5200}.system-status[data-type="offline"]{background:#fff1f2;border-color:#f3a8b1;color:#9f1239}.system-status[data-type="success"]{background:#eef9e8;border-color:#afd494;color:#356d20}.system-status[hidden]{display:none}
+@media(max-width:760px){.system-status{top:max(8px,env(safe-area-inset-top));font-size:.82rem;line-height:1.35}.skip-link{top:max(8px,env(safe-area-inset-top))}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(forced-colors:active){button,a,input,textarea,select,.card,.route-card,.expert-dialog{forced-color-adjust:auto}.tag,.route-badge{border:1px solid currentColor}}
