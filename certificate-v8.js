@@ -106,6 +106,34 @@
       </article>`;
   }
 
+  function fitCertificatePreview(modal) {
+    const preview = modal.querySelector('.certificate-preview');
+    const sheet = preview?.querySelector('.certificate-sheet');
+    if (!preview || !sheet) return () => {};
+    const baseWidth = 820;
+    const apply = () => {
+      sheet.style.removeProperty('width');
+      sheet.style.removeProperty('min-width');
+      sheet.style.removeProperty('transform');
+      sheet.style.removeProperty('transform-origin');
+      preview.style.removeProperty('height');
+      preview.style.removeProperty('overflow');
+      if (!matchMedia('(max-width:760px)').matches) return;
+      const available = Math.max(260, preview.clientWidth);
+      const scale = Math.min(1, available / baseWidth);
+      sheet.style.width = `${baseWidth}px`;
+      sheet.style.minWidth = `${baseWidth}px`;
+      sheet.style.transform = `scale(${scale})`;
+      sheet.style.transformOrigin = 'top left';
+      preview.style.height = `${Math.ceil(sheet.offsetHeight * scale)}px`;
+      preview.style.overflow = 'hidden';
+    };
+    apply();
+    requestAnimationFrame(apply);
+    addEventListener('resize', apply);
+    return () => removeEventListener('resize', apply);
+  }
+
   function openCertificate(data, route) {
     document.getElementById('certificateModal')?.remove();
     const modal = document.createElement('div');
@@ -125,7 +153,8 @@
       </div>`;
     document.body.appendChild(modal);
     renderPreviewQr(modal.querySelector('.certificate-qr'));
-    modal.querySelectorAll('[data-certificate-close]').forEach(button => button.onclick = () => modal.remove());
+    const cleanupPreview = fitCertificatePreview(modal);
+    modal.querySelectorAll('[data-certificate-close]').forEach(button => button.onclick = () => { cleanupPreview(); modal.remove(); });
     modal.querySelector('#printCertificate').onclick = event => downloadPdf(data, route, event.currentTarget);
   }
 
@@ -452,7 +481,7 @@
     .certificate-button,.payment-button{width:100%;margin-top:16px;border:0;border-radius:12px;padding:12px 16px;color:#fff;font:800 14px Outfit,Arial,sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(0,32,91,.18)}.certificate-button{background:linear-gradient(135deg,#00205b,#007b85)}.payment-button{background:linear-gradient(135deg,#007b85,#70ad47)}.certificate-button:disabled,.payment-button:disabled{opacity:.65}
     .payment-modal{position:fixed;inset:0;z-index:10020;display:grid;place-items:center;padding:14px;background:rgba(0,20,48,.8);overflow:auto}.payment-dialog{width:min(760px,100%);max-height:95dvh;overflow:auto;border-radius:24px;background:#f8fafc;box-shadow:0 28px 80px rgba(0,0,0,.4)}.payment-dialog>header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;gap:14px;align-items:center;padding:18px 20px;background:#fff;border-bottom:1px solid #dce5ea}.payment-dialog>header span{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#007b85}.payment-dialog>header h2{margin:3px 0 0;color:#00205b;font-size:18px}.payment-dialog>header button{width:40px;height:40px;border:0;border-radius:50%;background:#e8eef3;color:#00205b;font-size:25px}.payment-price{margin:18px;padding:18px;border-radius:18px;background:linear-gradient(135deg,#00205b,#007b85);color:#fff}.payment-price small{display:block;text-transform:uppercase;letter-spacing:.12em;font-weight:800}.payment-price strong{display:block;margin:4px 0;font-size:32px}.payment-price p{margin:0;font-size:13px;line-height:1.45}.payment-state{margin:0 18px 14px;padding:11px 13px;border-radius:12px;font-weight:800;font-size:12px}.payment-state.pending{background:#fff7db;color:#765700}.payment-state.rejected{background:#fff1f2;color:#be123c}.payment-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 18px 18px}.payment-methods article{display:flex;flex-direction:column;padding:14px;border:1px solid #dce5ea;border-radius:15px;background:#fff}.payment-methods h3{margin:0 0 6px;color:#00205b;font-size:14px}.payment-methods p{flex:1;margin:0 0 10px;color:#52697a;font-size:11px;line-height:1.45}.payment-methods button{border:1px solid #007b85;border-radius:9px;padding:8px;background:#eef8f7;color:#006a73;font-weight:800}.payment-actions{position:sticky;bottom:0;display:flex;gap:10px;padding:14px 18px;background:#fff;border-top:1px solid #dce5ea}.payment-actions button{min-height:46px;border:0;border-radius:11px;padding:10px 16px;font-weight:900}.payment-actions .secondary{background:#e8eef3;color:#00205b}.payment-whatsapp{flex:1;background:#25d366;color:#073b1b}
     .certificate-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,20,48,.76);display:grid;place-items:center;padding:16px;overflow:auto}.certificate-dialog{width:min(1100px,100%);max-height:96dvh;overflow:auto;background:#f8fafc;border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.35)}.certificate-toolbar,.certificate-actions{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:16px 20px}.certificate-toolbar b,.certificate-toolbar span{display:block}.certificate-toolbar span{color:#64748b;font-size:13px;margin-top:3px}.certificate-toolbar button{width:40px;height:40px;border:0;border-radius:50%;font-size:26px;background:#e8eef3;color:#00205b}.certificate-preview{padding:0 20px 10px;overflow:auto}.certificate-preview .certificate-sheet{width:100%;min-width:820px}.certificate-actions{justify-content:flex-end;border-top:1px solid #dce5ea}.certificate-actions button{padding:12px 18px}
-    @media(max-width:760px){.payment-methods{grid-template-columns:1fr}.payment-actions{display:grid;grid-template-columns:1fr 1.6fr}.payment-dialog>header h2{font-size:15px}.certificate-preview{padding:0 12px 10px}.certificate-preview .certificate-sheet{min-width:760px}.certificate-toolbar{position:sticky;top:0;z-index:2;background:#f8fafc}.certificate-actions{position:sticky;bottom:0;background:#f8fafc}.certificate-actions button{flex:1}.certificate-toolbar span{display:none}}
+    @media(max-width:760px){.payment-methods{grid-template-columns:1fr}.payment-actions{display:grid;grid-template-columns:1fr 1.6fr;padding-bottom:max(14px,env(safe-area-inset-bottom))}.payment-dialog>header h2{font-size:15px}.certificate-modal{place-items:end center;padding:0}.certificate-dialog{width:100%;max-height:96dvh;border-radius:24px 24px 0 0}.certificate-preview{padding:0 12px 10px;overflow:hidden}.certificate-toolbar{position:sticky;top:0;z-index:2;background:#f8fafc}.certificate-actions{position:sticky;bottom:0;background:#f8fafc;padding-bottom:max(16px,env(safe-area-inset-bottom))}.certificate-actions button{flex:1;min-height:48px}.certificate-toolbar span{display:none}}
     @media print{body>*:not(#certificateModal){display:none!important}.certificate-modal{position:static;padding:0;background:#fff}.certificate-toolbar,.certificate-actions{display:none!important}.certificate-dialog,.certificate-preview{padding:0;max-height:none;overflow:visible;box-shadow:none}.certificate-preview .certificate-sheet{width:297mm;height:210mm;min-width:0;box-shadow:none}}
   `;
   document.head.appendChild(style);
