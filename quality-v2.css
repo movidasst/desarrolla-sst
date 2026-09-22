@@ -83,3 +83,12 @@ button,a{touch-action:manipulation}.back,.lesson-nav button,.decisions button,.a
  .radar-message{font-size:1rem;padding:16px}
  .radar-choices button{min-height:84px}
 }
+
+/* Evidencia PREVER en Mi progreso */
+.prever-evidence{margin-top:12px;padding:12px 14px;border:1px solid #b9dfe2;border-radius:13px;background:#f2fbfb;display:grid;gap:4px}
+.prever-evidence>div{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.prever-evidence span{font-weight:800;color:#005e66}.prever-evidence b{font-size:1.15rem;color:#00205b}
+.prever-evidence small{color:#64748b;line-height:1.35}
+.prever-evidence.synced{background:#f5faef;border-color:#c6dfb4}.prever-evidence.synced span{color:#356d20}
+.prever-evidence.pending{background:#fff8e6;border-color:#ead38d}.prever-evidence.pending span,.prever-evidence.pending b{color:#6b5200}
+@media(max-width:760px){.prever-evidence>div{align-items:flex-start}.prever-evidence b{font-size:1rem}}
