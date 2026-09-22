@@ -382,10 +382,10 @@
     modal.querySelector('[data-payment-close]').focus();
   }
 
-  async function loadEligibility() {
+  async function loadEligibility(force = false) {
     if (eligibilityLoading) return;
     const token = sessionStorage.getItem(TOKEN);
-    if (!token || eligibilityLoadedFor === token) return;
+    if (!token || (!force && eligibilityLoadedFor === token)) return;
     eligibilityLoading = true;
     try {
       const response = await fetch(`${URL}/rest/v1/rpc/desarrolla_rutas_certificables`, {
@@ -457,5 +457,6 @@
 
   const progress = document.getElementById('progress');
   if (progress) new MutationObserver(() => setTimeout(() => { mountButtons(); loadEligibility(); }, 50)).observe(progress, { childList: true, subtree: true, attributes: true });
+  document.addEventListener('desarrolla:progress-updated', () => loadEligibility(true));
   setTimeout(() => { mountButtons(); loadEligibility(); }, 300);
 })();
