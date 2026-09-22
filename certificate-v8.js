@@ -131,6 +131,7 @@
 
   function loadJsPdf() {
     if (window.jspdf?.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+    if (window.DesarrollaDeps?.loadJsPdf) return window.DesarrollaDeps.loadJsPdf();
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js';
@@ -142,6 +143,7 @@
 
   function loadQrCode() {
     if (window.QRCode) return Promise.resolve(window.QRCode);
+    if (window.DesarrollaDeps?.loadQrCode) return window.DesarrollaDeps.loadQrCode();
     return new Promise((resolve, reject) => {
       const existing = document.querySelector('script[data-desarrolla-qr]');
       if (existing) {
