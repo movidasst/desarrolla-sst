@@ -1,7 +1,7 @@
 (()=>{"use strict";
 const U="https://lfdmbkzghnwvsapxypvt.supabase.co",K="sb_publishable_bRnkA6PA8-v073nrw9zxiQ_8rVGiOn1",T="desarrolla-ranking-token";
 if(!document.querySelector('script[data-methodology-v3]')){const s=document.createElement("script");s.src="methodology-v3.js?v=20260922-1";s.dataset.methodologyV3="";document.head.appendChild(s)}
-document.querySelector('link[href^="quality-v2.css"]')?.setAttribute("href","quality-v2.css?v=20260922-v3");
+document.querySelector('link[href^="quality-v2.css"]')?.setAttribute("href","quality-v2.css?v=20260922-v4");
 const routes={
  negociacion:{name:"Resolución de conflictos y negociación",plan:"desarrolla-neg-plan-v1",final:"desarrolla-neg-final-v2",root:"planRoot",sample:10,pass:80,product:"Preparar un acuerdo verificable con intereses, alternativas, límites, responsables e indicadores.",q:[
   ["Una negociación llega a un punto muerto. ¿Cuál es el siguiente paso más sólido?",["Reducir el control para conseguir acuerdo","Revisar intereses, criterios, mejor alternativa y opciones dentro de los límites preventivos","Pedir a la parte con mayor jerarquía que imponga la solución","Cerrar sin registrar el desacuerdo"],1,"Revisar intereses, criterios y alternativas permite reabrir opciones sin abandonar límites preventivos."],
