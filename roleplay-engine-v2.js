@@ -7,7 +7,8 @@ const ROOTS=[
  {root:"lrroot",key:"desarrolla-lead-role-v1",domain:"leadership"},
  {root:"irroot",key:"desarrolla-inf-role-v1",domain:"influence"},
  {root:"krroot",key:"desarrolla-crit-role-v1",domain:"critical"},
- {root:"erroot",key:"desarrolla-emo-role-v1",domain:"emotional"}
+ {root:"erroot",key:"desarrolla-emo-role-v1",domain:"emotional"},
+ {root:"frroot",key:"desarrolla-fin-role-v1",domain:"finance"}
 ];
 const DOMAIN_LABELS={negotiation:"Negociación",communication:"Comunicación",leadership:"Liderazgo",influence:"Influencia",critical:"Pensamiento crítico",emotional:"Gestión emocional",finance:"Finanzas y Valor Preventivo"};
 const CHALLENGES={
