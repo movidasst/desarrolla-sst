@@ -56,7 +56,7 @@ button,a{touch-action:manipulation}.back,.lesson-nav button,.decisions button,.a
 .radar-legend b{color:#00205b}
 .radar-legend span{font-size:.9rem;line-height:1.35;color:#64748b}
 .radar-last{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0}
-.radar-last>b{font-size:1.35rem;color:#007b85}
+.radar-last>b{font-size:1.35rem;color:#007b85}.radar-last button{margin-left:auto;border:0;background:transparent;color:#007b85;font:800 .86rem Outfit,Arial,sans-serif;cursor:pointer}.radar-last button:hover{text-decoration:underline}
 .route-head.compact{padding-bottom:18px}
 .radar-card{display:grid;gap:18px}
 .radar-source{display:flex;align-items:center;gap:12px}
